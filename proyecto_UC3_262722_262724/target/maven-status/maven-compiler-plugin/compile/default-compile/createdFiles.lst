@@ -1,8 +1,9 @@
+ui\SistemaGrafos$2.class
+ui\GrafoPanel.class
+modelo\Nodo.class
 ui\SistemaGrafos.class
 modelo\Arista.class
-ui\GrafoPanel.class
 modelo\Grafo.class
 ui\Inicio.class
 ui\SistemaGrafos$1.class
-modelo\Nodo.class
 controlador\Controlador.class

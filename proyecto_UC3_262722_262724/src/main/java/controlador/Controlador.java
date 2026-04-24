@@ -4,6 +4,10 @@
  */
 package controlador;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
+import modelo.Arista;
 import modelo.Grafo;
 import modelo.Nodo;
 
@@ -14,9 +18,14 @@ import modelo.Nodo;
 public class Controlador {
 
     private Grafo grafo;
+    private List<Nodo> nodos;
+    private List<Arista> aristas;
 
     public Controlador() {
+        nodos = new ArrayList<>();
+        aristas = new ArrayList<>();
         grafo = crearGrafoOaxaca();
+       
     }
 
     public Grafo getGrafo() {
@@ -79,8 +88,9 @@ public class Controlador {
 
         for (Nodo n : nodos) {
             grafo.agregarNodo(n);
+            this.nodos.add(n);
         }
-
+        
         // ARISTAS (distancias aproximadas en km)
         // ZONA CENTRO 
         grafo.conectar(oaxaca, xoxo, 5);
@@ -127,6 +137,44 @@ public class Controlador {
         grafo.conectar(oaxaca, tuxtepec, 215);
         grafo.conectar(tuxtepec, lomaBonita, 50);
         
+        for(Arista a : grafo.getAristas()){
+            this.aristas.add(a);
+        }
+        
         return grafo;
+    }
+    
+    public DefaultTableModel getTablaNodos() {
+        String[] columnas = {"#", "Nombre de Localidad", "Coordenada X", "Coordenada Y"};
+        DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
+
+        int contador = 1;
+        for (Nodo nodo : this.nodos) {
+            Object[] fila = {
+                contador++,
+                nodo.getNombre(),
+                nodo.getX(),
+                nodo.getY()
+            };
+            modelo.addRow(fila);
+        }
+        return modelo;
+    }
+    
+    public DefaultTableModel getTablaAristas() {
+        String[] columnas = {"#", "Origen", "Destino", "Distancia (KM)"};
+        DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
+
+        int contador = 1;
+        for (Arista arista : this.aristas) {
+            Object[] fila = {
+                contador++,
+                arista.getOrigen().getNombre(),
+                arista.getDestino().getNombre(),
+                arista.getPeso() + " km"
+            };
+            modelo.addRow(fila);
+        }
+        return modelo;
     }
 }

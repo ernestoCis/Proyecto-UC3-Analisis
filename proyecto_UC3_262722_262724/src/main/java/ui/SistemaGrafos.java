@@ -4,6 +4,8 @@ import controlador.Controlador;
 import javax.swing.*;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
 import modelo.Grafo;
 
 /**
@@ -65,7 +67,7 @@ public class SistemaGrafos extends JFrame {
         panelDerecho.setBackground(new Color(245, 245, 245));
         panelDerecho.setLayout(new BorderLayout());
 
-        JLabel lblBienvenida = new JLabel("Grafo", SwingConstants.CENTER);
+        JLabel lblBienvenida = new JLabel("Grafo de Oaxaca", SwingConstants.CENTER);
         lblBienvenida.setFont(new Font("Segoe UI Light", Font.PLAIN, 28));
         lblBienvenida.setForeground(Color.DARK_GRAY);
         panelDerecho.add(lblBienvenida, BorderLayout.CENTER);
@@ -162,11 +164,45 @@ public class SistemaGrafos extends JFrame {
 
     private void mostrarTabla() {
         panelDerecho.removeAll();
+        panelDerecho.setLayout(new BorderLayout());
+        panelDerecho.setBackground(Color.WHITE);
 
-        JTextArea area = new JTextArea();
-        area.setEditable(false);
+        JPanel contenedorTablas = new JPanel();
+        contenedorTablas.setLayout(new BoxLayout(contenedorTablas, BoxLayout.Y_AXIS));
+        contenedorTablas.setBackground(Color.WHITE);
+        contenedorTablas.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // tablilla
+        // Nodos
+        JLabel lblNodos = new JLabel("TABLA DE NODOS (LOCALIDADES)");
+        lblNodos.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        lblNodos.setAlignmentX(Component.LEFT_ALIGNMENT);
+        contenedorTablas.add(lblNodos);
+        contenedorTablas.add(Box.createRigidArea(new Dimension(0, 10)));
+
+        JTable tablaNodos = new JTable(controlador.getTablaNodos());
+        estilizarTabla(tablaNodos);
+        JScrollPane scrollNodos = new JScrollPane(tablaNodos);
+        scrollNodos.setPreferredSize(new Dimension(0, 200));
+        scrollNodos.setMaximumSize(new Dimension(Integer.MAX_VALUE, 250));
+        contenedorTablas.add(scrollNodos);
+
+        contenedorTablas.add(Box.createRigidArea(new Dimension(0, 30)));
+
+        // Aristas
+        JLabel lblAristas = new JLabel("TABLA DE ARISTAS (CARRETERAS)");
+        lblAristas.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        lblAristas.setAlignmentX(Component.LEFT_ALIGNMENT);
+        contenedorTablas.add(lblAristas);
+        contenedorTablas.add(Box.createRigidArea(new Dimension(0, 10)));
+
+        JTable tablaAristas = new JTable(controlador.getTablaAristas());
+        estilizarTabla(tablaAristas);
+        JScrollPane scrollAristas = new JScrollPane(tablaAristas);
+        scrollAristas.setPreferredSize(new Dimension(0, 200));
+        scrollAristas.setMaximumSize(new Dimension(Integer.MAX_VALUE, 250));
+        contenedorTablas.add(scrollAristas);
+
+        panelDerecho.add(new JScrollPane(contenedorTablas), BorderLayout.CENTER);
 
         panelDerecho.revalidate();
         panelDerecho.repaint();
@@ -182,5 +218,36 @@ public class SistemaGrafos extends JFrame {
 
         panelDerecho.revalidate();
         panelDerecho.repaint();
+    }
+
+    private void estilizarTabla(JTable tabla) {
+        tabla.setRowHeight(30);
+        tabla.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        tabla.setGridColor(new Color(210, 210, 210));
+        tabla.setShowVerticalLines(false);
+        tabla.setSelectionBackground(new Color(44, 62, 80));
+        tabla.setSelectionForeground(Color.WHITE);
+
+        JTableHeader header = tabla.getTableHeader();
+        header.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        header.setOpaque(false);
+
+        header.setDefaultRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+
+                super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+                setBackground(AZUL_MARINO);
+                setForeground(BLANCO_TEXTO);
+                setHorizontalAlignment(JLabel.CENTER);
+                setBorder(BorderFactory.createMatteBorder(0, 0, 1, 1, new Color(52, 73, 94)));
+
+                return this;
+            }
+        });
+
+        tabla.setBorder(null);
     }
 }

@@ -9,14 +9,14 @@ import java.util.List;
  * @author Paulina Guevara, Ernesto Cisneros
  */
 public class Nodo {
-    String nombre;
-    int x, y;
-    List<Arista> adyacentes;
+    private String nombre;
+    private int x, y;
+    private List<Arista> adyacentes;
     
     // Atributos auxiliares para algoritmos (BFS, DFS, Dijkstra)
-    boolean visitado;
-    double distancia; // Para Dijkstra
-    Nodo predecesor;  // Para reconstruir rutas cortas
+    private boolean visitado;
+    private double distancia; // Para Dijkstra
+    private Nodo predecesor;  // Para reconstruir rutas cortas
 
     public Nodo(String nombre, int x, int y) {
         this.nombre = nombre;
