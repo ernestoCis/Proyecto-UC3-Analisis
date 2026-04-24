@@ -2,6 +2,10 @@ import javax.swing.*;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
 
+/**
+ * 
+ * @author Paulina Guevara, Ernesto Cisneros
+ */
 public class SistemaGrafos extends JFrame {
 
     private final Color AZUL_MARINO = new Color(23, 32, 42);
