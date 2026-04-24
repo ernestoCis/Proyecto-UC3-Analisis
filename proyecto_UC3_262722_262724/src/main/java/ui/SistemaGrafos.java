@@ -1,27 +1,34 @@
 package ui;
 
+import controlador.Controlador;
 import javax.swing.*;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
+import modelo.Grafo;
 
 /**
- * 
+ *
  * @author Paulina Guevara, Ernesto Cisneros
  */
 public class SistemaGrafos extends JFrame {
+
+    private Controlador controlador;
 
     private final Color AZUL_MARINO = new Color(23, 32, 42);
     private final Color AZUL_HOVER = new Color(33, 47, 61);
     private final Color BLANCO_TEXTO = new Color(240, 243, 244);
     private final Color LINEA_SEPARADORA = new Color(52, 73, 94);
-    
+
     private JPanel panelDerecho;
 
     public SistemaGrafos() {
+        controlador = new Controlador();
+
         setTitle("Grafo Oaxaca");
         setSize(1100, 650);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+        setResizable(false);
 
         setLayout(new BorderLayout());
 
@@ -29,7 +36,7 @@ public class SistemaGrafos extends JFrame {
         menuLateral.setBackground(AZUL_MARINO);
         menuLateral.setPreferredSize(new Dimension(280, 0));
         menuLateral.setLayout(new BoxLayout(menuLateral, BoxLayout.Y_AXIS));
-        
+
         menuLateral.add(Box.createRigidArea(new Dimension(0, 30)));
 
         JLabel lblTitulo = new JLabel("MENÚ DEL SISTEMA");
@@ -37,7 +44,7 @@ public class SistemaGrafos extends JFrame {
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
         menuLateral.add(lblTitulo);
-        
+
         menuLateral.add(Box.createRigidArea(new Dimension(0, 30)));
 
         String[] opciones = {
@@ -57,7 +64,7 @@ public class SistemaGrafos extends JFrame {
         panelDerecho = new JPanel();
         panelDerecho.setBackground(new Color(245, 245, 245));
         panelDerecho.setLayout(new BorderLayout());
-        
+
         JLabel lblBienvenida = new JLabel("Grafo", SwingConstants.CENTER);
         lblBienvenida.setFont(new Font("Segoe UI Light", Font.PLAIN, 28));
         lblBienvenida.setForeground(Color.DARK_GRAY);
@@ -71,11 +78,11 @@ public class SistemaGrafos extends JFrame {
 
     private JButton crearBotonMenu(String texto) {
         JButton btn = new JButton(texto);
-        
-        btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 55)); 
+
+        btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 55));
         btn.setPreferredSize(new Dimension(280, 55));
         btn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
+
         btn.setFocusPainted(false);
         btn.setBorderPainted(true);
         btn.setContentAreaFilled(false);
@@ -84,17 +91,18 @@ public class SistemaGrafos extends JFrame {
         btn.setForeground(BLANCO_TEXTO);
         btn.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        
+
         btn.setHorizontalAlignment(SwingConstants.LEFT);
         btn.setBorder(BorderFactory.createCompoundBorder(
-            new MatteBorder(0, 0, 1, 0, LINEA_SEPARADORA), 
-            BorderFactory.createEmptyBorder(0, 25, 0, 0)    
+                new MatteBorder(0, 0, 1, 0, LINEA_SEPARADORA),
+                BorderFactory.createEmptyBorder(0, 25, 0, 0)
         ));
 
         btn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 btn.setBackground(AZUL_HOVER);
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 btn.setBackground(AZUL_MARINO);
             }
@@ -103,6 +111,9 @@ public class SistemaGrafos extends JFrame {
         btn.addActionListener(e -> {
             if (texto.equals("Salir")) {
                 System.exit(0);
+            } else if (texto.equals("Visualización de grafo")) {
+                JPopupMenu popup = crearSubmenuVisualizacion();
+                popup.show(btn, btn.getWidth(), 0); // aparece a la derecha
             } else {
                 actualizarPanelDerecho(texto);
             }
@@ -113,19 +124,63 @@ public class SistemaGrafos extends JFrame {
 
     private void actualizarPanelDerecho(String titulo) {
         panelDerecho.removeAll();
-        
-        JLabel lblTitulo = new JLabel(titulo);
-        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        lblTitulo.setBorder(BorderFactory.createEmptyBorder(30, 30, 10, 10));
-        
-        panelDerecho.add(lblTitulo, BorderLayout.NORTH);
-        
-        JPanel contenido = new JPanel();
-        contenido.setOpaque(false);
-        contenido.add(new JLabel("Contenido de " + titulo + " irá aquí..."));
-        panelDerecho.add(contenido, BorderLayout.CENTER);
+
+        if (titulo.equals("Visualización de grafo")) {
+            Grafo grafo = controlador.getGrafo();
+            GrafoPanel panel = new GrafoPanel(grafo);
+            panelDerecho.add(panel, BorderLayout.CENTER);
+        } else {
+            JLabel lblTitulo = new JLabel(titulo);
+            lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
+            lblTitulo.setBorder(BorderFactory.createEmptyBorder(30, 30, 10, 10));
+
+            panelDerecho.add(lblTitulo, BorderLayout.NORTH);
+
+            JPanel contenido = new JPanel();
+            contenido.add(new JLabel("Contenido de " + titulo));
+            panelDerecho.add(contenido, BorderLayout.CENTER);
+        }
 
         panelDerecho.revalidate();
         panelDerecho.repaint();
-    }   
+    }
+
+    private JPopupMenu crearSubmenuVisualizacion() {
+        JPopupMenu popup = new JPopupMenu();
+
+        JMenuItem tabla = new JMenuItem("Mostrar tabla de nodos y aristas");
+        tabla.addActionListener(e -> mostrarTabla());
+
+        JMenuItem grafico = new JMenuItem("Mostrar representación gráfica");
+        grafico.addActionListener(e -> mostrarGrafo());
+
+        popup.add(tabla);
+        popup.add(grafico);
+
+        return popup;
+    }
+
+    private void mostrarTabla() {
+        panelDerecho.removeAll();
+
+        JTextArea area = new JTextArea();
+        area.setEditable(false);
+
+        // tablilla
+
+        panelDerecho.revalidate();
+        panelDerecho.repaint();
+    }
+
+    private void mostrarGrafo() {
+        panelDerecho.removeAll();
+
+        Grafo grafo = controlador.getGrafo();
+        GrafoPanel panel = new GrafoPanel(grafo);
+
+        panelDerecho.add(panel, BorderLayout.CENTER);
+
+        panelDerecho.revalidate();
+        panelDerecho.repaint();
+    }
 }
