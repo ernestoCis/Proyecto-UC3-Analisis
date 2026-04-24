@@ -1,6 +1,8 @@
+package modelo;
+
 /**
  * 
- * @author Paulina Guevara, Ernesto Cisneros;
+ * @author Paulina Guevara, Ernesto Cisneros
  */
 public class Arista implements Comparable<Arista> {
     Nodo origen;

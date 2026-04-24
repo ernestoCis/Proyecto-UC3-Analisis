@@ -1,3 +1,5 @@
+package ui;
+
 import javax.swing.*;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
@@ -125,13 +127,5 @@ public class SistemaGrafos extends JFrame {
 
         panelDerecho.revalidate();
         panelDerecho.repaint();
-    }
-
-    public static void main(String[] args) {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception ignored) {}
-
-        SwingUtilities.invokeLater(SistemaGrafos::new);
-    }
+    }   
 }

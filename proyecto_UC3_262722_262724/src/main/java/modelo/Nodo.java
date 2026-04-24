@@ -1,3 +1,6 @@
+package modelo;
+
+import modelo.Arista;
 import java.util.ArrayList;
 import java.util.List;
 
