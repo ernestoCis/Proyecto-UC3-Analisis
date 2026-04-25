@@ -17,20 +17,32 @@ import modelo.Grafo;
 import modelo.Nodo;
 
 /**
- *
- * @author Paulina Guevara, Ernesto Cisneros
+ * Ventana principal del sistema "Grafo Oaxaca".
+ * Proporciona la interfaz de usuario para la visualización del mapa, 
+ * tablas de datos, ejecución de recorridos (BFS/DFS) y reportes de complejidad.
+ * * @author Paulina Guevara, Ernesto Cisneros
  */
 public class SistemaGrafos extends JFrame {
 
+    /** Instancia del controlador para gestionar la lógica del grafo. */
     private Controlador controlador;
 
+    /** Constante de color para la identidad visual */
     private final Color AZUL_MARINO = new Color(23, 32, 42);
+    /** Constante de color para la identidad visual */
     private final Color AZUL_HOVER = new Color(33, 47, 61);
+    /** Constante de color para la identidad visual */
     private final Color BLANCO_TEXTO = new Color(240, 243, 244);
+    /** Constante de color para la identidad visual */
     private final Color LINEA_SEPARADORA = new Color(52, 73, 94);
 
+    /** Panel contenedor de la derecha donde se renderiza el contenido dinámico. */
     private JPanel panelDerecho;
 
+    /**
+     * Constructor que inicializa la ventana principal, el menú lateral 
+     * y el panel de bienvenida.
+     */
     public SistemaGrafos() {
         controlador = new Controlador();
 
@@ -86,6 +98,11 @@ public class SistemaGrafos extends JFrame {
         setVisible(true);
     }
 
+    /**
+     * Crea un botón estilizado para el menú lateral con efectos hover y eventos.
+     * @param texto El nombre de la opción.
+     * @return Un objeto JButton configurado.
+     */
     private JButton crearBotonMenu(String texto) {
         JButton btn = new JButton(texto);
 
@@ -137,6 +154,10 @@ public class SistemaGrafos extends JFrame {
         return btn;
     }
 
+    /**
+     * Reemplaza el contenido del panel derecho por el lienzo de dibujo del grafo.
+     * @param titulo El título de la acción ejecutada.
+     */
     private void actualizarPanelDerecho(String titulo) {
         panelDerecho.setLayout(new BorderLayout());
 
@@ -149,6 +170,10 @@ public class SistemaGrafos extends JFrame {
         panelDerecho.repaint();
     }
 
+    /**
+     * Crea un menú emergente con las opciones de visualización (Tabla o Gráfico).
+     * @return JPopupMenu configurado.
+     */
     private JPopupMenu crearSubmenuVisualizacion() {
         JPopupMenu popup = new JPopupMenu();
 
@@ -164,6 +189,9 @@ public class SistemaGrafos extends JFrame {
         return popup;
     }
 
+    /**
+     * Genera y muestra las tablas de datos de nodos y aristas en el panel derecho.
+     */
     private void mostrarTabla() {
         panelDerecho.removeAll();
         panelDerecho.setLayout(new BorderLayout());
@@ -210,6 +238,9 @@ public class SistemaGrafos extends JFrame {
         panelDerecho.repaint();
     }
 
+    /**
+     * Limpia resultados previos y muestra el panel de representación gráfica.
+     */
     private void mostrarGrafo() {
         controlador.limpiarResultadoAlgoritmos();
 
@@ -224,6 +255,10 @@ public class SistemaGrafos extends JFrame {
         panelDerecho.repaint();
     }
 
+    /**
+     * Solicita una semilla y ejecuta el recorrido en anchura (BFS).
+     * Muestra la secuencia resultante en un diálogo.
+     */
     private void mostrarBFS() {
         mostrarGrafo();
 
@@ -257,6 +292,10 @@ public class SistemaGrafos extends JFrame {
         }
     }
 
+    /**
+     * Solicita una semilla y ejecuta el recorrido en profundidad (DFS).
+     * Muestra el tiempo de descubrimiento en un diálogo.
+     */
     private void mostrarDFS() {
         mostrarGrafo();
 
@@ -289,6 +328,10 @@ public class SistemaGrafos extends JFrame {
         }
     }
 
+    /**
+     * Aplica un diseño uniforme y colores del sistema a las tablas JTable.
+     * @param tabla La tabla a la que se aplicará el estilo.
+     */
     private void estilizarTabla(JTable tabla) {
         tabla.setRowHeight(30);
         tabla.setFont(new Font("Segoe UI", Font.PLAIN, 14));
@@ -320,6 +363,10 @@ public class SistemaGrafos extends JFrame {
         tabla.setBorder(null);
     }
 
+    /**
+     * Crea un menú emergente para seleccionar entre BFS y DFS.
+     * @return JPopupMenu configurado.
+     */
     private JPopupMenu crearSubmenuRecorridos() {
         JPopupMenu popup = new JPopupMenu();
 
@@ -337,6 +384,10 @@ public class SistemaGrafos extends JFrame {
         return popup;
     }
 
+    /**
+     * Genera un reporte de complejidad temporal en formato HTML y lo muestra 
+     * en el panel derecho.
+     */
     private void mostrarReporteComplejidad() {
         panelDerecho.removeAll();
         panelDerecho.setLayout(new BorderLayout());

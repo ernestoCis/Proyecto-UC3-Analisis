@@ -5,11 +5,19 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 /**
- *
- * @author Paulina Guevara, Ernesto Cisneros
+ * Ventana de diálogo personalizada y modal diseñada para mostrar información 
+ * textual detallada (como secuencias de algoritmos o reportes) manteniendo 
+ * la línea estática del sistema.
+ * * @author Paulina Guevara, Ernesto Cisneros
  */
 public class DialogoPersonalizado extends JDialog {
 
+    /**
+     * Constructor que construye e inicializa el diálogo con un estilo azul marino.
+     * * @param padre     Ventana principal (Frame) sobre la cual se posicionará el diálogo.
+     * @param titulo    Texto que aparecerá en el encabezado de la ventana.
+     * @param contenido Texto descriptivo o secuencia que se mostrará en el área central.
+     */
     public DialogoPersonalizado(Frame padre, String titulo, String contenido) {
         super(padre, titulo, true); // true para que sea modal
 

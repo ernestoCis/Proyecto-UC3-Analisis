@@ -9,13 +9,15 @@ import javax.swing.UIManager;
 import ui.SistemaGrafos;
 
 /**
- *
- * @author Paulina Guevara, Ernesto Cisneros
+ * Clase principal que funge como punto de entrada (Entry Point) para la aplicación.
+ * Se encarga de configurar el entorno gráfico y lanzar la interfaz principal.
+ * * @author Paulina Guevara, Ernesto Cisneros
  */
 public class Inicio {
 
     /**
-     * @param args the command line arguments
+     * Método principal que inicia la ejecución del programa.
+     * * @param args Argumentos de la línea de comandos (no utilizados en esta aplicación).
      */
     public static void main(String[] args) {
         try {
@@ -23,6 +25,11 @@ public class Inicio {
         } catch (Exception ignored) {
         }
 
+        /**
+         * Lanza la interfaz gráfica dentro del Event Dispatch Thread (EDT).
+         * Esto es una buena práctica en Swing para asegurar que la actualización 
+         * de los componentes sea segura y evitar condiciones de carrera.
+         */
         SwingUtilities.invokeLater(SistemaGrafos::new);
     }
 
