@@ -225,7 +225,7 @@ public class SistemaGrafos extends JFrame {
     private void mostrarBFS() {
         mostrarGrafo();
         
-        String entrada = JOptionPane.showInputDialog(this, "Ingrese localidad semilla:");
+        String entrada = JOptionPane.showInputDialog(this, "Ingrese localidad semilla para BFS:");
 
         if (entrada != null && !entrada.trim().isEmpty()) {
             Nodo semilla = controlador.buscarNodoPorNombre(entrada);
@@ -251,6 +251,38 @@ public class SistemaGrafos extends JFrame {
 
             } else {
                 JOptionPane.showMessageDialog(this, "La localidad no existe en el registro.");
+            }
+        }
+    }
+    
+    private void mostrarDFS() {
+        mostrarGrafo();
+        
+        String entrada = JOptionPane.showInputDialog(this, "Ingrese localidad semilla para DFS:");
+
+        if (entrada != null && !entrada.trim().isEmpty()) {
+            Nodo semilla = controlador.buscarNodoPorNombre(entrada);
+
+            if (semilla != null) {
+                List<Nodo> visita = controlador.ejecutarDFS(semilla);
+
+                panelDerecho.repaint();
+
+                StringBuilder sb = new StringBuilder();
+                sb.append("RECORRIDO EN PROFUNDIDAD (DFS)\n");
+                sb.append("-------------------------------------------\n\n");
+
+                for (int i = 0; i < visita.size(); i++) {
+                    Nodo n = visita.get(i);
+                    sb.append(String.format(" [%02d] %-20s (Tiempo d: %d)\n",
+                            (i + 1), n.getNombre(), (int) n.getDistancia()));
+                }
+
+                DialogoPersonalizado dp = new DialogoPersonalizado(this, "Resultado DFS", sb.toString());
+                dp.setVisible(true);
+
+            } else {
+                JOptionPane.showMessageDialog(this, "Error: Localidad no encontrada.");
             }
         }
     }
@@ -294,7 +326,7 @@ public class SistemaGrafos extends JFrame {
 
         JMenuItem dfs = new JMenuItem("Recorrido DFS (Profundidad)");
         dfs.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Próximamente: Recorrido por Profundidad");
+            mostrarDFS();
         });
 
         popup.add(bfs);

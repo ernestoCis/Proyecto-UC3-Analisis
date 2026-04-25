@@ -24,7 +24,7 @@ public class Controlador {
 
     public Controlador() {
         grafo = crearGrafoOaxaca();
-       
+
     }
 
     public Grafo getGrafo() {
@@ -88,7 +88,7 @@ public class Controlador {
         for (Nodo n : nodos) {
             grafo.agregarNodo(n);
         }
-        
+
         // ARISTAS (distancias aproximadas en km)
         // ZONA CENTRO 
         grafo.conectar(oaxaca, xoxo, 5);
@@ -134,10 +134,10 @@ public class Controlador {
         // NORTE 
         grafo.conectar(oaxaca, tuxtepec, 215);
         grafo.conectar(tuxtepec, lomaBonita, 50);
-        
+
         return grafo;
     }
-    
+
     public DefaultTableModel getTablaNodos() {
         String[] columnas = {"#", "Nombre de Localidad", "Coordenada X", "Coordenada Y"};
         DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
@@ -155,7 +155,7 @@ public class Controlador {
         }
         return modelo;
     }
-    
+
     public DefaultTableModel getTablaAristas() {
         String[] columnas = {"#", "Origen", "Destino", "Distancia (KM)"};
         DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
@@ -173,31 +173,32 @@ public class Controlador {
         }
         return modelo;
     }
-    
+
     public void limpiarResultadoAlgoritmos() {
         for (Nodo n : grafo.getNodos()) {
             n.setVisitado(false);
             n.setPredecesor(null);
             n.setDistancia(Double.MAX_VALUE);
+            n.setF(null);
         }
         for (Arista a : grafo.getAristas()) {
             a.setEsParteDeResultado(false);
         }
-        
+
         for (Nodo n : grafo.getNodos()) {
             for (Arista ady : n.getAdyacentes()) {
                 ady.setEsParteDeResultado(false);
             }
         }
     }
-    
+
     // Recorridos
     public List<Nodo> ejecutarBFS(Nodo nodoSemilla) {
-        
+
         limpiarResultadoAlgoritmos();
-        
+
         List<Nodo> nodos = this.grafo.getNodos();
-        
+
         // Limpiar estados previos
         for (Nodo n : nodos) {
             n.setVisitado(false);
@@ -232,7 +233,53 @@ public class Controlador {
         }
         return secuenciaVisita;
     }
+
+    private int tiempo;
+
+    public List<Nodo> ejecutarDFS(Nodo inicio) {
+        List<Nodo> visita = new ArrayList<>();
+
+        limpiarResultadoAlgoritmos();
+
+        tiempo = 0;
+
+        if (!inicio.isVisitado()) {
+            dfsVisit(inicio, visita);
+        }
+        
+        return visita;
+    }
     
+    private void dfsVisit(Nodo u, List<Nodo> visita) {
+        tiempo++;
+        u.setDistancia(tiempo); // u.d = time
+
+        u.setVisitado(true);
+        visita.add(u);
+
+        for (Arista arista : u.getAdyacentes()) {
+            Nodo v = arista.getDestino();
+            if (!v.isVisitado()) {
+                v.setPredecesor(u);
+                arista.setEsParteDeResultado(true);
+                marcarAristaEspejo(v, u);
+                dfsVisit(v, visita);
+            }
+        }
+
+        tiempo++;            // time = time + 1
+        u.setF(tiempo);      // u.f = time
+    }
+    
+    private void marcarAristaEspejo(Nodo origen, Nodo destino) {
+        for (Arista a : origen.getAdyacentes()) {
+            if (a.getDestino().equals(destino)) {
+                a.setEsParteDeResultado(true);
+                break;
+            }
+        }
+    }
+
     public Nodo buscarNodoPorNombre(String nombreBusqueda) {
         if (nombreBusqueda == null || nombreBusqueda.trim().isEmpty()) {
             return null;

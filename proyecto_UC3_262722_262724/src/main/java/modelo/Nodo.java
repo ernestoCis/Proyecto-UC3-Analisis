@@ -16,6 +16,7 @@ public class Nodo {
     // Atributos auxiliares para algoritmos (BFS, DFS, Dijkstra)
     private boolean visitado;
     private double distancia; // Para Dijkstra
+    private Integer f; // Para DFS
     private Nodo predecesor;  // Para reconstruir rutas cortas
 
     public Nodo(String nombre, int x, int y) {
@@ -86,6 +87,14 @@ public class Nodo {
 
     public void agregarArista(Nodo destino, double peso) {
         this.adyacentes.add(new Arista(this, destino, peso));
+    }
+
+    public Integer getF() {
+        return f;
+    }
+
+    public void setF(Integer f) {
+        this.f = f;
     }
 
     @Override
