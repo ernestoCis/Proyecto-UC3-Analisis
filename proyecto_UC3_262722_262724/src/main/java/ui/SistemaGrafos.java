@@ -294,7 +294,7 @@ public class SistemaGrafos extends JFrame {
                 controlador.limpiarResultadoAlgoritmos();
                 List<PasoAlgoritmo> pasos = controlador.ejecutarBFS(semilla);
 
-                Timer timer = new Timer(30, null);
+                Timer timer = new Timer(100, null);
                 final int[] indice = {0};
 
                 timer.addActionListener(e -> {
@@ -358,17 +358,15 @@ public class SistemaGrafos extends JFrame {
 
             if (semilla != null) {
                 controlador.limpiarResultadoAlgoritmos();
-                // Obtenemos la lista de pasos (igual que en BFS)
                 List<PasoAlgoritmo> pasos = controlador.ejecutarDFS(semilla);
 
-                Timer timer = new Timer(30, null); // Velocidad media
+                Timer timer = new Timer(100, null);
                 final int[] indice = {0};
 
                 timer.addActionListener(e -> {
                     if (indice[0] < pasos.size()) {
                         PasoAlgoritmo p = pasos.get(indice[0]);
 
-                        // Aplicamos los cambios al objeto real (Nodo y Arista)
                         p.nodo.setEstado(p.colorNuevo);
                         if (p.arista != null) {
                             p.arista.setEsParteDeResultado(true);
@@ -509,7 +507,7 @@ public class SistemaGrafos extends JFrame {
                 + "  </ul>"
                 + "</div>"
                 + "<div style='background-color: #D6EAF8; padding: 15px; border-left: 5px solid #17202A;'>"
-                + "  <b>Nota Técnica:</b> En ambos casos, <i>V</i> representa el número de ciudades de Oaxaca "
+                + "  <b>Nota:</b> En ambos casos, <i>V</i> representa el número de ciudades de Oaxaca "
                 + "  y <i>E</i> el número de carreteras que las conectan."
                 + "</div>"
                 + "</body></html>";

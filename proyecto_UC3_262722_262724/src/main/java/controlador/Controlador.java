@@ -242,44 +242,48 @@ public class Controlador {
 
         limpiarResultadoAlgoritmos();
 
-        List<PasoAlgoritmo> secuenciaPasos = new ArrayList<>();
+        List<PasoAlgoritmo> secuenciaPasos = new ArrayList<>(); // Interfaz
 
         List<Nodo> nodos = this.grafo.getNodos();
 
-        // Limpiar estados previos
+        // Pasos del 1 al 4
         for (Nodo n : nodos) {
             n.setVisitado(false);
             n.setPredecesor(null);
             n.setDistancia(Double.MAX_VALUE); // Inicializamos como "infinito"
         }
-
-        Queue<Nodo> cola = new LinkedList<>();
-
+        
+        // Pasos del 5 al 7
         nodoSemilla.setVisitado(true);
         nodoSemilla.setDistancia(0);
+        nodoSemilla.setPredecesor(null);
+        
+
+        // Paso 8
+        Queue<Nodo> cola = new LinkedList<>();
+
+        //Paso 9
         cola.add(nodoSemilla);
 
         secuenciaPasos.add(new PasoAlgoritmo(nodoSemilla, null, Color.GRAY)); // Interfaz
 
-        while (!cola.isEmpty()) {
-            Nodo actual = cola.poll();
+        
+        while (!cola.isEmpty()) { // Paso 10
+            Nodo actual = cola.poll(); // Paso 11
 
-            for (Arista arista : actual.getAdyacentes()) {
-                Nodo vecino = arista.getDestino();
+            for (Arista arista : actual.getAdyacentes()) { // Paso 12
+                Nodo vecino = arista.getDestino(); // v
 
-                if (!vecino.isVisitado()) {
-                    vecino.setVisitado(true);
-                    vecino.setPredecesor(actual);
-
-                    vecino.setDistancia(actual.getDistancia() + 1);
-
-                    arista.setEsParteDeResultado(true);
+                if (!vecino.isVisitado()) { // Paso 13
+                    vecino.setVisitado(true); // Paso 14
+                    vecino.setDistancia(actual.getDistancia() + 1); // Paso 15
+                    vecino.setPredecesor(actual); // Paso 16
+                    cola.add(vecino); // Paso 17
 
                     secuenciaPasos.add(new PasoAlgoritmo(vecino, arista, Color.GRAY)); // Interfaz
-                    cola.add(vecino);
                 }
             }
-            secuenciaPasos.add(new PasoAlgoritmo(actual, null, Color.BLACK)); // Interfaz
+            secuenciaPasos.add(new PasoAlgoritmo(actual, null, Color.BLACK)); // Interfaz / Paso 18
         }
         for (Nodo n : grafo.getNodos()) {
             n.setEstado(Color.BLUE); // Interfaz
@@ -303,16 +307,22 @@ public class Controlador {
 
         limpiarResultadoAlgoritmos();
 
+        // Pasos de 1 a 3
         for (Nodo n : grafo.getNodos()) {
             n.setVisitado(false);
-            n.setEstado(Color.BLUE);
+            n.setPredecesor(null);
+            n.setEstado(Color.BLUE); // Interfaz
         }
+        
+        // Interfaz
         for (Arista a : grafo.getAristas()) {
             a.setEsParteDeResultado(false);
         }
 
+        // Paso 4
         tiempo = 0;
 
+        // Pasos de 5 a 7
         if (!inicio.isVisitado()) {
             dfsVisit(inicio, pasos);
         }
@@ -327,42 +337,27 @@ public class Controlador {
      * @param visita Lista que acumula el orden de visita.
      */
     private void dfsVisit(Nodo u, List<PasoAlgoritmo> pasos) {
-        tiempo++;
-        u.setDistancia(tiempo); // u.d = time
-        u.setVisitado(true);
+        tiempo++; // Paso 1
+        u.setDistancia(tiempo); // Paso 2      u.d = time
+        u.setVisitado(true); // Paso 3
         
         pasos.add(new PasoAlgoritmo(u, null, Color.GRAY)); // Interfaz
 
-        for (Arista arista : u.getAdyacentes()) {
-            Nodo v = arista.getDestino();
-            if (!v.isVisitado()) {
-                v.setPredecesor(u);
+        for (Arista arista : u.getAdyacentes()) { // Paso 4
+            Nodo v = arista.getDestino(); // v
+            if (!v.isVisitado()) { // Paso 5
+                v.setPredecesor(u); // Paso 6
+                
                 pasos.add(new PasoAlgoritmo(v, arista, Color.GRAY)); // Interfaz
-                arista.setEsParteDeResultado(true);
-                marcarAristaEspejo(v, u);
-                dfsVisit(v, pasos);
+                
+                dfsVisit(v, pasos); // Paso 7
             }
         }
-
-        tiempo++;            // time = time + 1
-        u.setF(tiempo);      // u.f = time
         
-        pasos.add(new PasoAlgoritmo(u, null, Color.BLACK)); // Interfaz
-    }
+        pasos.add(new PasoAlgoritmo(u, null, Color.BLACK)); // Paso 8 / Interfaz
 
-    /**
-     * Marca la arista de regreso en un grafo no dirigido para fines visuales.
-     *
-     * @param origen Nodo desde donde se busca la conexión.
-     * @param destino Nodo hacia donde apunta la arista a marcar.
-     */
-    private void marcarAristaEspejo(Nodo origen, Nodo destino) {
-        for (Arista a : origen.getAdyacentes()) {
-            if (a.getDestino().equals(destino)) {
-                a.setEsParteDeResultado(true);
-                break;
-            }
-        }
+        tiempo++;   // Paso 9         // time = time + 1
+        u.setF(tiempo); // Paso 10     // u.f = time
     }
 
     /**
