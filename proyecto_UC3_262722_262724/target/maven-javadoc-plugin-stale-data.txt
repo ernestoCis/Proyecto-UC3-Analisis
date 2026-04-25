@@ -1,0 +1,46 @@
+-J-Duser.language=
+-J-Duser.country=
+@options
+@packages
+--no-fonts
+-encoding
+'UTF-8'
+-protected
+--release
+17
+-sourcepath
+'C:/Users/jesus/OneDrive/Todo/Personal/Todo/Documentos/GitHub/Proyecto-UC3-Analisis/proyecto_UC3_262722_262724/src/main/java'
+-author
+-bottom
+'Copyright &#169; 2026. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'C:/Users/jesus/OneDrive/Todo/Personal/Todo/Documentos/GitHub/Proyecto-UC3-Analisis/proyecto_UC3_262722_262724/target/reports/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'proyecto_UC3_262722_262724 1.0-SNAPSHOT API'
+-use
+-version
+-windowtitle
+'proyecto_UC3_262722_262724 1.0-SNAPSHOT API'
+controlador
+modelo
+ui
+C:\Users\jesus\OneDrive\Todo\Personal\Todo\Documentos\GitHub\Proyecto-UC3-Analisis\proyecto_UC3_262722_262724\src\main\java = 1777067243014
+C:\Users\jesus\OneDrive\Todo\Personal\Todo\Documentos\GitHub\Proyecto-UC3-Analisis\proyecto_UC3_262722_262724\target\reports\apidocs\allclasses-index.html = 1777085256852
+C:\Users\jesus\OneDrive\Todo\Personal\Todo\Documentos\GitHub\Proyecto-UC3-Analisis\proyecto_UC3_262722_262724\target\reports\apidocs\allpackages-index.html = 1777085256859
+C:\Users\jesus\OneDrive\Todo\Personal\Todo\Documentos\GitHub\Proyecto-UC3-Analisis\proyecto_UC3_262722_262724\target\reports\apidocs\element-list = 1777085256589
+C:\Users\jesus\OneDrive\Todo\Personal\Todo\Documentos\GitHub\Proyecto-UC3-Analisis\proyecto_UC3_262722_262724\target\reports\apidocs\help-doc.html = 1777085256943
+C:\Users\jesus\OneDrive\Todo\Personal\Todo\Documentos\GitHub\Proyecto-UC3-Analisis\proyecto_UC3_262722_262724\target\reports\apidocs\index-all.html = 1777085256922
+C:\Users\jesus\OneDrive\Todo\Personal\Todo\Documentos\GitHub\Proyecto-UC3-Analisis\proyecto_UC3_262722_262724\target\reports\apidocs\index.html = 1777085256823
+C:\Users\jesus\OneDrive\Todo\Personal\Todo\Documentos\GitHub\Proyecto-UC3-Analisis\proyecto_UC3_262722_262724\target\reports\apidocs\member-search-index.js = 1777085256871
+C:\Users\jesus\OneDrive\Todo\Personal\Todo\Documentos\GitHub\Proyecto-UC3-Analisis\proyecto_UC3_262722_262724\target\reports\apidocs\module-search-index.js = 1777085256862
+C:\Users\jesus\OneDrive\Todo\Personal\Todo\Documentos\GitHub\Proyecto-UC3-Analisis\proyecto_UC3_262722_262724\target\reports\apidocs\overview-summary.html = 1777085256933
+C:\Users\jesus\OneDrive\Todo\Personal\Todo\Documentos\GitHub\Proyecto-UC3-Analisis\proyecto_UC3_262722_262724\target\reports\apidocs\overview-tree.html = 1777085256814
+C:\Users\jesus\OneDrive\Todo\Personal\Todo\Documentos\GitHub\Proyecto-UC3-Analisis\proyecto_UC3_262722_262724\target\reports\apidocs\package-search-index.js = 1777085256865
+C:\Users\jesus\OneDrive\Todo\Personal\Todo\Documentos\GitHub\Proyecto-UC3-Analisis\proyecto_UC3_262722_262724\target\reports\apidocs\search.html = 1777085256928
+C:\Users\jesus\OneDrive\Todo\Personal\Todo\Documentos\GitHub\Proyecto-UC3-Analisis\proyecto_UC3_262722_262724\target\reports\apidocs\serialized-form.html = 1777085256693
+C:\Users\jesus\OneDrive\Todo\Personal\Todo\Documentos\GitHub\Proyecto-UC3-Analisis\proyecto_UC3_262722_262724\target\reports\apidocs\tag-search-index.js = 1777085256874
+C:\Users\jesus\OneDrive\Todo\Personal\Todo\Documentos\GitHub\Proyecto-UC3-Analisis\proyecto_UC3_262722_262724\target\reports\apidocs\type-search-index.js = 1777085256868

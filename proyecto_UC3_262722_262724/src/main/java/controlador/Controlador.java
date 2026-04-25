@@ -8,29 +8,43 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import modelo.Arista;
 import modelo.Grafo;
 import modelo.Nodo;
 
 /**
- *
- * @author Paulina Guevara, Ernesto Cisneros
+ * Clase controladora que gestiona la lógica de negocio del sistema.
+ * Se encarga de la creación del grafo, la manipulación de datos para la interfaz 
+ * y la ejecución de algoritmos de búsqueda y recorrido.
+ * * @author Paulina Guevara, Ernesto Cisneros
  */
 public class Controlador {
 
+    /** Instancia del grafo principal que contiene la red de carreteras de Oaxaca. */
     private Grafo grafo;
 
+    /**
+     * Constructor que inicializa el controlador y genera el grafo de Oaxaca.
+     */
     public Controlador() {
         grafo = crearGrafoOaxaca();
 
     }
 
+    /**
+     * Obtiene la instancia del grafo gestionado.
+     * @return El objeto Grafo.
+     */
     public Grafo getGrafo() {
         return grafo;
     }
 
+    /**
+     * Define y construye la estructura del grafo representando las localidades
+     * principales del estado de Oaxaca y sus conexiones viales.
+     * @return Un objeto Grafo poblado con nodos y aristas.
+     */
     private Grafo crearGrafoOaxaca() {
 
         Grafo grafo = new Grafo();
@@ -138,6 +152,10 @@ public class Controlador {
         return grafo;
     }
 
+    /**
+     * Genera un modelo de tabla con los datos de todas las localidades registradas.
+     * @return DefaultTableModel para ser usado en un JTable.
+     */
     public DefaultTableModel getTablaNodos() {
         String[] columnas = {"#", "Nombre de Localidad", "Coordenada X", "Coordenada Y"};
         DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
@@ -156,6 +174,10 @@ public class Controlador {
         return modelo;
     }
 
+    /**
+     * Genera un modelo de tabla con los datos de todas las carreteras y sus distancias.
+     * @return DefaultTableModel para ser usado en un JTable.
+     */
     public DefaultTableModel getTablaAristas() {
         String[] columnas = {"#", "Origen", "Destino", "Distancia (KM)"};
         DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
@@ -174,6 +196,10 @@ public class Controlador {
         return modelo;
     }
 
+    /**
+     * Reinicia los estados de todos los nodos y aristas para permitir 
+     * una nueva ejecución de algoritmos sin datos residuales.
+     */
     public void limpiarResultadoAlgoritmos() {
         for (Nodo n : grafo.getNodos()) {
             n.setVisitado(false);
@@ -193,6 +219,13 @@ public class Controlador {
     }
 
     // Recorridos
+    
+    /**
+     * Ejecuta el recorrido en anchura (BFS) a partir de una localidad semilla.
+     * Calcula los niveles de distancia mínima en términos de saltos.
+     * @param nodoSemilla Punto de inicio del recorrido.
+     * @return Lista de nodos en el orden en que fueron descubiertos.
+     */
     public List<Nodo> ejecutarBFS(Nodo nodoSemilla) {
 
         limpiarResultadoAlgoritmos();
@@ -234,8 +267,14 @@ public class Controlador {
         return secuenciaVisita;
     }
 
+    /** Atributo auxiliar para llevar el conteo de tiempo en DFS. */
     private int tiempo;
 
+    /**
+     * Ejecuta el recorrido en profundidad (DFS) a partir de un nodo inicial.
+     * @param inicio Nodo raíz para comenzar la exploración.
+     * @return Lista de nodos visitados en orden de descubrimiento.
+     */
     public List<Nodo> ejecutarDFS(Nodo inicio) {
         List<Nodo> visita = new ArrayList<>();
 
@@ -250,6 +289,11 @@ public class Controlador {
         return visita;
     }
     
+    /**
+     * Método recursivo para la exploración en profundidad.
+     * @param u      Nodo actual que se está visitando.
+     * @param visita Lista que acumula el orden de visita.
+     */
     private void dfsVisit(Nodo u, List<Nodo> visita) {
         tiempo++;
         u.setDistancia(tiempo); // u.d = time
@@ -271,6 +315,11 @@ public class Controlador {
         u.setF(tiempo);      // u.f = time
     }
     
+    /**
+     * Marca la arista de regreso en un grafo no dirigido para fines visuales.
+     * @param origen  Nodo desde donde se busca la conexión.
+     * @param destino Nodo hacia donde apunta la arista a marcar.
+     */
     private void marcarAristaEspejo(Nodo origen, Nodo destino) {
         for (Arista a : origen.getAdyacentes()) {
             if (a.getDestino().equals(destino)) {
@@ -280,6 +329,11 @@ public class Controlador {
         }
     }
 
+    /**
+     * Busca un objeto Nodo dentro del grafo comparando por nombre.
+     * @param nombreBusqueda Texto con el nombre de la localidad.
+     * @return El objeto Nodo encontrado o null si no existe.
+     */
     public Nodo buscarNodoPorNombre(String nombreBusqueda) {
         if (nombreBusqueda == null || nombreBusqueda.trim().isEmpty()) {
             return null;
