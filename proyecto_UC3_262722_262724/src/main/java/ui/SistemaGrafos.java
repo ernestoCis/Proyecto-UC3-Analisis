@@ -1,12 +1,20 @@
 package ui;
 
 import controlador.Controlador;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.border.MatteBorder;
-import java.awt.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import modelo.Grafo;
+import modelo.Nodo;
 
 /**
  *
@@ -116,6 +124,9 @@ public class SistemaGrafos extends JFrame {
             } else if (texto.equals("Visualización de grafo")) {
                 JPopupMenu popup = crearSubmenuVisualizacion();
                 popup.show(btn, btn.getWidth(), 0); // aparece a la derecha
+            } else if (texto.equals("Recorridos")) {
+                JPopupMenu popup = crearSubmenuRecorridos();
+                popup.show(btn, btn.getWidth(), 0);
             } else {
                 actualizarPanelDerecho(texto);
             }
@@ -125,23 +136,12 @@ public class SistemaGrafos extends JFrame {
     }
 
     private void actualizarPanelDerecho(String titulo) {
+        panelDerecho.setLayout(new BorderLayout());
+
+        GrafoPanel lienzo = new GrafoPanel(controlador.getGrafo());
+
         panelDerecho.removeAll();
-
-        if (titulo.equals("Visualización de grafo")) {
-            Grafo grafo = controlador.getGrafo();
-            GrafoPanel panel = new GrafoPanel(grafo);
-            panelDerecho.add(panel, BorderLayout.CENTER);
-        } else {
-            JLabel lblTitulo = new JLabel(titulo);
-            lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
-            lblTitulo.setBorder(BorderFactory.createEmptyBorder(30, 30, 10, 10));
-
-            panelDerecho.add(lblTitulo, BorderLayout.NORTH);
-
-            JPanel contenido = new JPanel();
-            contenido.add(new JLabel("Contenido de " + titulo));
-            panelDerecho.add(contenido, BorderLayout.CENTER);
-        }
+        panelDerecho.add(lienzo, BorderLayout.CENTER);
 
         panelDerecho.revalidate();
         panelDerecho.repaint();
@@ -209,6 +209,8 @@ public class SistemaGrafos extends JFrame {
     }
 
     private void mostrarGrafo() {
+        controlador.limpiarResultadoAlgoritmos();
+
         panelDerecho.removeAll();
 
         Grafo grafo = controlador.getGrafo();
@@ -218,6 +220,39 @@ public class SistemaGrafos extends JFrame {
 
         panelDerecho.revalidate();
         panelDerecho.repaint();
+    }
+
+    private void mostrarBFS() {
+        mostrarGrafo();
+        
+        String entrada = JOptionPane.showInputDialog(this, "Ingrese localidad semilla:");
+
+        if (entrada != null && !entrada.trim().isEmpty()) {
+            Nodo semilla = controlador.buscarNodoPorNombre(entrada);
+
+            if (semilla != null) {
+                controlador.limpiarResultadoAlgoritmos();
+                List<Nodo> visita = controlador.ejecutarBFS(semilla);
+
+                panelDerecho.repaint();
+
+                StringBuilder sb = new StringBuilder();
+                sb.append("Orden de visita desde: ").append(semilla.getNombre()).append("\n");
+                sb.append("-------------------------------------------\n\n");
+
+                for (int i = 0; i < visita.size(); i++) {
+                    Nodo n = visita.get(i);
+                    sb.append(String.format(" [%02d] %-20s (Nivel %d)\n",
+                            (i + 1), n.getNombre(), (int) n.getDistancia()));
+                }
+
+                DialogoPersonalizado dp = new DialogoPersonalizado(this, "Secuencia de Recorrido BFS", sb.toString());
+                dp.setVisible(true);
+
+            } else {
+                JOptionPane.showMessageDialog(this, "La localidad no existe en el registro.");
+            }
+        }
     }
 
     private void estilizarTabla(JTable tabla) {
@@ -249,5 +284,22 @@ public class SistemaGrafos extends JFrame {
         });
 
         tabla.setBorder(null);
+    }
+    
+    private JPopupMenu crearSubmenuRecorridos() {
+        JPopupMenu popup = new JPopupMenu();
+
+        JMenuItem bfs = new JMenuItem("Recorrido BFS (Anchura)");
+        bfs.addActionListener(e -> mostrarBFS());
+
+        JMenuItem dfs = new JMenuItem("Recorrido DFS (Profundidad)");
+        dfs.addActionListener(e -> {
+            JOptionPane.showMessageDialog(this, "Próximamente: Recorrido por Profundidad");
+        });
+
+        popup.add(bfs);
+        popup.add(dfs);
+
+        return popup;
     }
 }

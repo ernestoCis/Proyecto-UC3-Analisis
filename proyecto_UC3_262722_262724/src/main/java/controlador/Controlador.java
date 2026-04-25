@@ -5,7 +5,10 @@
 package controlador;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import modelo.Arista;
 import modelo.Grafo;
@@ -18,12 +21,8 @@ import modelo.Nodo;
 public class Controlador {
 
     private Grafo grafo;
-    private List<Nodo> nodos;
-    private List<Arista> aristas;
 
     public Controlador() {
-        nodos = new ArrayList<>();
-        aristas = new ArrayList<>();
         grafo = crearGrafoOaxaca();
        
     }
@@ -88,7 +87,6 @@ public class Controlador {
 
         for (Nodo n : nodos) {
             grafo.agregarNodo(n);
-            this.nodos.add(n);
         }
         
         // ARISTAS (distancias aproximadas en km)
@@ -137,10 +135,6 @@ public class Controlador {
         grafo.conectar(oaxaca, tuxtepec, 215);
         grafo.conectar(tuxtepec, lomaBonita, 50);
         
-        for(Arista a : grafo.getAristas()){
-            this.aristas.add(a);
-        }
-        
         return grafo;
     }
     
@@ -148,8 +142,9 @@ public class Controlador {
         String[] columnas = {"#", "Nombre de Localidad", "Coordenada X", "Coordenada Y"};
         DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
 
+        List<Nodo> listaNodos = this.grafo.getNodos();
         int contador = 1;
-        for (Nodo nodo : this.nodos) {
+        for (Nodo nodo : listaNodos) {
             Object[] fila = {
                 contador++,
                 nodo.getNombre(),
@@ -165,8 +160,9 @@ public class Controlador {
         String[] columnas = {"#", "Origen", "Destino", "Distancia (KM)"};
         DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
 
+        List<Arista> listaAristas = this.grafo.getAristas();
         int contador = 1;
-        for (Arista arista : this.aristas) {
+        for (Arista arista : listaAristas) {
             Object[] fila = {
                 contador++,
                 arista.getOrigen().getNombre(),
@@ -176,5 +172,80 @@ public class Controlador {
             modelo.addRow(fila);
         }
         return modelo;
+    }
+    
+    public void limpiarResultadoAlgoritmos() {
+        for (Nodo n : grafo.getNodos()) {
+            n.setVisitado(false);
+            n.setPredecesor(null);
+            n.setDistancia(Double.MAX_VALUE);
+        }
+        for (Arista a : grafo.getAristas()) {
+            a.setEsParteDeResultado(false);
+        }
+        
+        for (Nodo n : grafo.getNodos()) {
+            for (Arista ady : n.getAdyacentes()) {
+                ady.setEsParteDeResultado(false);
+            }
+        }
+    }
+    
+    // Recorridos
+    public List<Nodo> ejecutarBFS(Nodo nodoSemilla) {
+        
+        limpiarResultadoAlgoritmos();
+        
+        List<Nodo> nodos = this.grafo.getNodos();
+        
+        // Limpiar estados previos
+        for (Nodo n : nodos) {
+            n.setVisitado(false);
+            n.setPredecesor(null);
+            n.setDistancia(Double.MAX_VALUE); // Inicializamos como "infinito"
+        }
+
+        List<Nodo> secuenciaVisita = new ArrayList<>();
+        Queue<Nodo> cola = new LinkedList<>();
+
+        nodoSemilla.setVisitado(true);
+        nodoSemilla.setDistancia(0);
+        cola.add(nodoSemilla);
+
+        while (!cola.isEmpty()) {
+            Nodo actual = cola.poll();
+            secuenciaVisita.add(actual);
+
+            for (Arista arista : actual.getAdyacentes()) {
+                Nodo vecino = arista.getDestino();
+
+                if (!vecino.isVisitado()) {
+                    vecino.setVisitado(true);
+                    vecino.setPredecesor(actual);
+
+                    vecino.setDistancia(actual.getDistancia() + 1);
+
+                    arista.setEsParteDeResultado(true);
+                    cola.add(vecino);
+                }
+            }
+        }
+        return secuenciaVisita;
+    }
+    
+    public Nodo buscarNodoPorNombre(String nombreBusqueda) {
+        if (nombreBusqueda == null || nombreBusqueda.trim().isEmpty()) {
+            return null;
+        }
+
+        String nombreLimpio = nombreBusqueda.trim();
+
+        for (Nodo n : grafo.getNodos()) {
+            if (n.getNombre().equalsIgnoreCase(nombreLimpio)) {
+                return n;
+            }
+        }
+
+        return null;
     }
 }

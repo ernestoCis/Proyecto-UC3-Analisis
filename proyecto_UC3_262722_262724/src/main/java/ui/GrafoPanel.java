@@ -5,10 +5,12 @@
 package ui;
 
 import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import modelo.Arista;
@@ -38,6 +40,8 @@ public class GrafoPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
+        
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         // FONDO
         if (fondo != null) {
@@ -49,6 +53,13 @@ public class GrafoPanel extends JPanel {
         // DIBUJAR ARISTAS
         for (Nodo n : grafo.getNodos()) {
             for (Arista a : n.getAdyacentes()) {
+                if (a.isEsParteDeResultado()) {
+                    g2.setColor(Color.RED); // Color de resaltado
+                    g2.setStroke(new BasicStroke(6));
+                } else {
+                    g2.setColor(Color.GRAY); // Color normal
+                    g2.setStroke(new BasicStroke(1));
+                }
                 Nodo destino = a.getDestino();
 
                 g.setColor(Color.GRAY);

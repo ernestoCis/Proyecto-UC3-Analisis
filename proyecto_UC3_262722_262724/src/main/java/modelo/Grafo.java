@@ -13,10 +13,12 @@ public class Grafo {
     }
 
     public void conectar(Nodo a, Nodo b, int peso) {
-        Arista arista = new Arista(a, b, peso);
-        aristas.add(arista);
+        Arista ida = new Arista(a, b, peso);
+        a.getAdyacentes().add(ida);
+        aristas.add(ida);
 
-        a.getAdyacentes().add(arista);
+        Arista vuelta = new Arista(b, a, peso);
+        b.getAdyacentes().add(vuelta);
     }
 
     public List<Nodo> getNodos() {

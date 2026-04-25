@@ -1,6 +1,7 @@
 ui\SistemaGrafos$2.class
 ui\GrafoPanel.class
 modelo\Nodo.class
+ui\DialogoPersonalizado.class
 ui\SistemaGrafos.class
 modelo\Arista.class
 modelo\Grafo.class
