@@ -33,7 +33,7 @@ public class Arista implements Comparable<Arista> {
     /**
      * Constructor para crear una nueva Arista.
      *
-     * * @param origen El nodo de partida.
+     * @param origen El nodo de partida.
      * @param destino El nodo de llegada.
      * @param peso El valor numérico de la distancia entre ambos nodos.
      */
@@ -122,7 +122,7 @@ public class Arista implements Comparable<Arista> {
      * Compara esta arista con otra basándose exclusivamente en su peso.
      * Esencial para el funcionamiento de algoritmos de optimización.
      *
-     * * @param otra La arista con la que se desea comparar.
+     * @param otra La arista con la que se desea comparar.
      * @return Un entero negativo, cero o positivo si el peso es menor, igual o
      * mayor respectivamente.
      */

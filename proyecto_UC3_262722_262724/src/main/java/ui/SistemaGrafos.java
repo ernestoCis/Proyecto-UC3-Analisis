@@ -20,7 +20,7 @@ import modelo.Nodo;
  * Ventana principal del sistema "Grafo Oaxaca".
  * Proporciona la interfaz de usuario para la visualización del mapa, 
  * tablas de datos, ejecución de recorridos (BFS/DFS) y reportes de complejidad.
- * * @author Paulina Guevara, Ernesto Cisneros
+ * @author Paulina Guevara, Ernesto Cisneros
  */
 public class SistemaGrafos extends JFrame {
 

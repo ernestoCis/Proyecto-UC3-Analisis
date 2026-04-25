@@ -21,7 +21,7 @@ import modelo.Nodo;
  * Panel personalizado para la representación gráfica del grafo sobre un mapa.
  * Se encarga de renderizar los nodos como puntos, las aristas como líneas 
  * y de resaltar los resultados de los algoritmos de búsqueda (BFS, DFS).
- * * @author Paulina Guevara, Ernesto Cisneros
+ * @author Paulina Guevara, Ernesto Cisneros
  */
 public class GrafoPanel extends JPanel {
 
@@ -32,7 +32,7 @@ public class GrafoPanel extends JPanel {
 
     /**
      * Constructor que inicializa el panel con un grafo específico y carga la imagen de fondo.
-     * * @param grafo El objeto Grafo que se desea visualizar.
+     * @param grafo El objeto Grafo que se desea visualizar.
      */
     public GrafoPanel(Grafo grafo) {
         this.grafo = grafo;
@@ -47,7 +47,7 @@ public class GrafoPanel extends JPanel {
     /**
      * Sobrescribe el método de dibujo para renderizar los componentes del grafo.
      * Realiza el dibujado en orden: fondo (imagen), aristas (normales/resaltadas) y nodos.
-     * * @param g El contexto gráfico utilizado para pintar.
+     * @param g El contexto gráfico utilizado para pintar.
      */
     @Override
     protected void paintComponent(Graphics g) {

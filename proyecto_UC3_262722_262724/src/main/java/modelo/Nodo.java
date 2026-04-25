@@ -31,7 +31,7 @@ public class Nodo {
 
     /**
      * Constructor para inicializar un nodo con su nombre y coordenadas.
-     * * @param nombre Nombre de la localidad.
+     * @param nombre Nombre de la localidad.
      * @param x      Posición en el eje horizontal.
      * @param y      Posición en el eje vertical.
      */
@@ -159,7 +159,7 @@ public class Nodo {
 
     /**
      * Crea y agrega una nueva arista de salida desde este nodo.
-     * * @param destino Nodo al que apunta la conexión.
+     * @param destino Nodo al que apunta la conexión.
      * @param peso    Costo o distancia de la arista.
      */
     public void agregarArista(Nodo destino, double peso) {

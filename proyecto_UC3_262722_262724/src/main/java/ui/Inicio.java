@@ -11,13 +11,21 @@ import ui.SistemaGrafos;
 /**
  * Clase principal que funge como punto de entrada (Entry Point) para la aplicación.
  * Se encarga de configurar el entorno gráfico y lanzar la interfaz principal.
- * * @author Paulina Guevara, Ernesto Cisneros
+ * @author Paulina Guevara, Ernesto Cisneros
  */
 public class Inicio {
+    
+    /**
+     * Constructor privado para evitar la instanciación de la clase de inicio.
+     * Se añade para cumplir con los estándares de documentación y evitar advertencias de JavaDoc.
+     */
+    private Inicio() {
+        throw new IllegalStateException("Clase de inicio");
+    }
 
     /**
      * Método principal que inicia la ejecución del programa.
-     * * @param args Argumentos de la línea de comandos (no utilizados en esta aplicación).
+     * @param args Argumentos de la línea de comandos (no utilizados en esta aplicación).
      */
     public static void main(String[] args) {
         try {
