@@ -1,6 +1,7 @@
 package ui;
 
 import controlador.Controlador;
+import controlador.Controlador.PasoAlgoritmo;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -8,7 +9,9 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.swing.*;
 import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -17,31 +20,44 @@ import modelo.Grafo;
 import modelo.Nodo;
 
 /**
- * Ventana principal del sistema "Grafo Oaxaca".
- * Proporciona la interfaz de usuario para la visualización del mapa, 
- * tablas de datos, ejecución de recorridos (BFS/DFS) y reportes de complejidad.
+ * Ventana principal del sistema "Grafo Oaxaca". Proporciona la interfaz de
+ * usuario para la visualización del mapa, tablas de datos, ejecución de
+ * recorridos (BFS/DFS) y reportes de complejidad.
+ *
  * @author Paulina Guevara, Ernesto Cisneros
  */
 public class SistemaGrafos extends JFrame {
 
-    /** Instancia del controlador para gestionar la lógica del grafo. */
+    /**
+     * Instancia del controlador para gestionar la lógica del grafo.
+     */
     private Controlador controlador;
 
-    /** Constante de color para la identidad visual */
+    /**
+     * Constante de color para la identidad visual
+     */
     private final Color AZUL_MARINO = new Color(23, 32, 42);
-    /** Constante de color para la identidad visual */
+    /**
+     * Constante de color para la identidad visual
+     */
     private final Color AZUL_HOVER = new Color(33, 47, 61);
-    /** Constante de color para la identidad visual */
+    /**
+     * Constante de color para la identidad visual
+     */
     private final Color BLANCO_TEXTO = new Color(240, 243, 244);
-    /** Constante de color para la identidad visual */
+    /**
+     * Constante de color para la identidad visual
+     */
     private final Color LINEA_SEPARADORA = new Color(52, 73, 94);
 
-    /** Panel contenedor de la derecha donde se renderiza el contenido dinámico. */
+    /**
+     * Panel contenedor de la derecha donde se renderiza el contenido dinámico.
+     */
     private JPanel panelDerecho;
 
     /**
-     * Constructor que inicializa la ventana principal, el menú lateral 
-     * y el panel de bienvenida.
+     * Constructor que inicializa la ventana principal, el menú lateral y el
+     * panel de bienvenida.
      */
     public SistemaGrafos() {
         controlador = new Controlador();
@@ -99,7 +115,9 @@ public class SistemaGrafos extends JFrame {
     }
 
     /**
-     * Crea un botón estilizado para el menú lateral con efectos hover y eventos.
+     * Crea un botón estilizado para el menú lateral con efectos hover y
+     * eventos.
+     *
      * @param texto El nombre de la opción.
      * @return Un objeto JButton configurado.
      */
@@ -144,7 +162,7 @@ public class SistemaGrafos extends JFrame {
             } else if (texto.equals("Recorridos")) {
                 JPopupMenu popup = crearSubmenuRecorridos();
                 popup.show(btn, btn.getWidth(), 0);
-            } else if(texto.equals("Reportes de complejidad")){
+            } else if (texto.equals("Reportes de complejidad")) {
                 mostrarReporteComplejidad();
             } else {
                 actualizarPanelDerecho(texto);
@@ -155,7 +173,9 @@ public class SistemaGrafos extends JFrame {
     }
 
     /**
-     * Reemplaza el contenido del panel derecho por el lienzo de dibujo del grafo.
+     * Reemplaza el contenido del panel derecho por el lienzo de dibujo del
+     * grafo.
+     *
      * @param titulo El título de la acción ejecutada.
      */
     private void actualizarPanelDerecho(String titulo) {
@@ -171,7 +191,9 @@ public class SistemaGrafos extends JFrame {
     }
 
     /**
-     * Crea un menú emergente con las opciones de visualización (Tabla o Gráfico).
+     * Crea un menú emergente con las opciones de visualización (Tabla o
+     * Gráfico).
+     *
      * @return JPopupMenu configurado.
      */
     private JPopupMenu crearSubmenuVisualizacion() {
@@ -190,7 +212,8 @@ public class SistemaGrafos extends JFrame {
     }
 
     /**
-     * Genera y muestra las tablas de datos de nodos y aristas en el panel derecho.
+     * Genera y muestra las tablas de datos de nodos y aristas en el panel
+     * derecho.
      */
     private void mostrarTabla() {
         panelDerecho.removeAll();
@@ -256,8 +279,8 @@ public class SistemaGrafos extends JFrame {
     }
 
     /**
-     * Solicita una semilla y ejecuta el recorrido en anchura (BFS).
-     * Muestra la secuencia resultante en un diálogo.
+     * Solicita una semilla y ejecuta el recorrido en anchura (BFS). Muestra la
+     * secuencia resultante en un diálogo.
      */
     private void mostrarBFS() {
         mostrarGrafo();
@@ -269,22 +292,29 @@ public class SistemaGrafos extends JFrame {
 
             if (semilla != null) {
                 controlador.limpiarResultadoAlgoritmos();
-                List<Nodo> visita = controlador.ejecutarBFS(semilla);
+                List<PasoAlgoritmo> pasos = controlador.ejecutarBFS(semilla);
 
-                panelDerecho.repaint();
+                Timer timer = new Timer(30, null);
+                final int[] indice = {0};
 
-                StringBuilder sb = new StringBuilder();
-                sb.append("Orden de visita desde: ").append(semilla.getNombre()).append("\n");
-                sb.append("-------------------------------------------\n\n");
+                timer.addActionListener(e -> {
+                    if (indice[0] < pasos.size()) {
+                        PasoAlgoritmo p = pasos.get(indice[0]);
 
-                for (int i = 0; i < visita.size(); i++) {
-                    Nodo n = visita.get(i);
-                    sb.append(String.format(" [%02d] %-20s (Nivel %d)\n",
-                            (i + 1), n.getNombre(), (int) n.getDistancia()));
-                }
+                        p.nodo.setEstado(p.colorNuevo);
+                        if (p.arista != null) {
+                            p.arista.setEsParteDeResultado(true);
+                        }
 
-                DialogoPersonalizado dp = new DialogoPersonalizado(this, "Secuencia de Recorrido BFS", sb.toString());
-                dp.setVisible(true);
+                        panelDerecho.repaint();
+                        indice[0]++;
+                    } else {
+                        timer.stop();
+                        mostrarReporteFinalBFS(semilla, pasos);
+                    }
+                });
+
+                timer.start();
 
             } else {
                 JOptionPane.showMessageDialog(this, "La localidad no existe en el registro.");
@@ -293,8 +323,30 @@ public class SistemaGrafos extends JFrame {
     }
 
     /**
-     * Solicita una semilla y ejecuta el recorrido en profundidad (DFS).
-     * Muestra el tiempo de descubrimiento en un diálogo.
+     * Método auxiliar para mostrar el diálogo con los resultados una vez
+     * acabada la animación.
+     */
+    private void mostrarReporteFinalBFS(Nodo semilla, List<PasoAlgoritmo> pasos) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Recorrido BFS finalizado desde: ").append(semilla.getNombre()).append("\n");
+        sb.append("-------------------------------------------\n\n");
+
+        int contador = 1;
+        for (PasoAlgoritmo p : pasos) {
+            if (p.colorNuevo.equals(Color.BLACK)) {
+                sb.append(String.format(" [%02d] %-20s (Nivel %d)\n",
+                        contador++, p.nodo.getNombre(), (int) p.nodo.getDistancia()));
+            }
+        }
+
+        DialogoPersonalizado dp = new DialogoPersonalizado(this, "Secuencia de Recorrido BFS", sb.toString());
+        dp.setVisible(true);
+        dp.toFront();
+    }
+
+    /**
+     * Solicita una semilla y ejecuta el recorrido en profundidad (DFS). Muestra
+     * el tiempo de descubrimiento en un diálogo.
      */
     private void mostrarDFS() {
         mostrarGrafo();
@@ -305,31 +357,70 @@ public class SistemaGrafos extends JFrame {
             Nodo semilla = controlador.buscarNodoPorNombre(entrada);
 
             if (semilla != null) {
-                List<Nodo> visita = controlador.ejecutarDFS(semilla);
+                controlador.limpiarResultadoAlgoritmos();
+                // Obtenemos la lista de pasos (igual que en BFS)
+                List<PasoAlgoritmo> pasos = controlador.ejecutarDFS(semilla);
 
-                panelDerecho.repaint();
+                Timer timer = new Timer(30, null); // Velocidad media
+                final int[] indice = {0};
 
-                StringBuilder sb = new StringBuilder();
-                sb.append("RECORRIDO EN PROFUNDIDAD (DFS)\n");
-                sb.append("-------------------------------------------\n\n");
+                timer.addActionListener(e -> {
+                    if (indice[0] < pasos.size()) {
+                        PasoAlgoritmo p = pasos.get(indice[0]);
 
-                for (int i = 0; i < visita.size(); i++) {
-                    Nodo n = visita.get(i);
-                    sb.append(String.format(" [%02d] %-20s (Tiempo d: %d)\n",
-                            (i + 1), n.getNombre(), (int) n.getDistancia()));
-                }
+                        // Aplicamos los cambios al objeto real (Nodo y Arista)
+                        p.nodo.setEstado(p.colorNuevo);
+                        if (p.arista != null) {
+                            p.arista.setEsParteDeResultado(true);
+                        }
 
-                DialogoPersonalizado dp = new DialogoPersonalizado(this, "Resultado DFS", sb.toString());
-                dp.setVisible(true);
+                        panelDerecho.repaint();
+                        indice[0]++;
+                    } else {
+                        timer.stop();
+                        mostrarReporteFinalDFS(semilla, pasos);
+                    }
+                });
+
+                timer.start();
 
             } else {
-                JOptionPane.showMessageDialog(this, "Error: Localidad no encontrada.");
+                JOptionPane.showMessageDialog(this, "La localidad no existe en el registro.");
             }
         }
     }
 
+    private void mostrarReporteFinalDFS(Nodo semilla, List<PasoAlgoritmo> pasos) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("RECORRIDO DFS FINALIZADO\n");
+        sb.append("Origen: ").append(semilla.getNombre()).append("\n");
+        sb.append("-----------------------------------------------------------------\n");
+
+        sb.append(String.format("%-25s | %-15s | %-12s\n",
+                "LOCALIDAD", "DESCUBRIMIENTO", "FINALIZACIÓN"));
+        sb.append("-----------------------------------------------------------------\n\n");
+
+        Set<Nodo> agregados = new HashSet<>();
+
+        for (PasoAlgoritmo p : pasos) {
+            Nodo n = p.nodo;
+            if (!agregados.contains(n)) {
+                sb.append(String.format("%-25s | d = %-10d | f = %-8d\n",
+                        n.getNombre(),
+                        (int) n.getDistancia(),
+                        (int) n.getF()));
+                agregados.add(n);
+            }
+        }
+        sb.append("----------------------------------------------------------------------\n");
+
+        DialogoPersonalizado dp = new DialogoPersonalizado(this, "Secuencia de Recorrido DFS", sb.toString());
+        dp.setVisible(true);
+    }
+
     /**
      * Aplica un diseño uniforme y colores del sistema a las tablas JTable.
+     *
      * @param tabla La tabla a la que se aplicará el estilo.
      */
     private void estilizarTabla(JTable tabla) {
@@ -365,6 +456,7 @@ public class SistemaGrafos extends JFrame {
 
     /**
      * Crea un menú emergente para seleccionar entre BFS y DFS.
+     *
      * @return JPopupMenu configurado.
      */
     private JPopupMenu crearSubmenuRecorridos() {
@@ -385,8 +477,8 @@ public class SistemaGrafos extends JFrame {
     }
 
     /**
-     * Genera un reporte de complejidad temporal en formato HTML y lo muestra 
-     * en el panel derecho.
+     * Genera un reporte de complejidad temporal en formato HTML y lo muestra en
+     * el panel derecho.
      */
     private void mostrarReporteComplejidad() {
         panelDerecho.removeAll();

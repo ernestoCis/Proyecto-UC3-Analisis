@@ -1,5 +1,6 @@
 package modelo;
 
+import java.awt.Color;
 import modelo.Arista;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,8 @@ public class Nodo {
     private int y;
     /** Lista de aristas que conectan a este nodo con sus vecinos. */
     private List<Arista> adyacentes;
+    /** Estado del nodo representado por un color Blanco:No visitado, Gris:En proceso, Negro:Finalizado */
+    private Color estado;
     
     /** Estado de exploración del nodo (usado en BFS y DFS). */
     private boolean visitado;
@@ -43,6 +46,7 @@ public class Nodo {
         this.visitado = false;
         this.distancia = Double.MAX_VALUE; // Representa el infinito
         this.predecesor = null;
+        this.estado = Color.BLUE;
     }
 
     /**
@@ -180,6 +184,22 @@ public class Nodo {
      */
     public void setF(Integer f) {
         this.f = f;
+    }
+
+    /**
+     * Regresa el estado del nodo representado por un color
+     * @return 
+     */
+    public Color getEstado() {
+        return estado;
+    }
+
+    /**
+     * Establece el estado del nodo representado por un color
+     * @param estado 
+     */
+    public void setEstado(Color estado) {
+        this.estado = estado;
     }
 
     /**

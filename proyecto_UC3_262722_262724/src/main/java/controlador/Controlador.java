@@ -4,6 +4,7 @@
  */
 package controlador;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,14 +15,18 @@ import modelo.Grafo;
 import modelo.Nodo;
 
 /**
- * Clase controladora que gestiona la lógica de negocio del sistema.
- * Se encarga de la creación del grafo, la manipulación de datos para la interfaz 
- * y la ejecución de algoritmos de búsqueda y recorrido.
+ * Clase controladora que gestiona la lógica de negocio del sistema. Se encarga
+ * de la creación del grafo, la manipulación de datos para la interfaz y la
+ * ejecución de algoritmos de búsqueda y recorrido.
+ *
  * * @author Paulina Guevara, Ernesto Cisneros
  */
 public class Controlador {
 
-    /** Instancia del grafo principal que contiene la red de carreteras de Oaxaca. */
+    /**
+     * Instancia del grafo principal que contiene la red de carreteras de
+     * Oaxaca.
+     */
     private Grafo grafo;
 
     /**
@@ -34,6 +39,7 @@ public class Controlador {
 
     /**
      * Obtiene la instancia del grafo gestionado.
+     *
      * @return El objeto Grafo.
      */
     public Grafo getGrafo() {
@@ -43,6 +49,7 @@ public class Controlador {
     /**
      * Define y construye la estructura del grafo representando las localidades
      * principales del estado de Oaxaca y sus conexiones viales.
+     *
      * @return Un objeto Grafo poblado con nodos y aristas.
      */
     private Grafo crearGrafoOaxaca() {
@@ -153,7 +160,9 @@ public class Controlador {
     }
 
     /**
-     * Genera un modelo de tabla con los datos de todas las localidades registradas.
+     * Genera un modelo de tabla con los datos de todas las localidades
+     * registradas.
+     *
      * @return DefaultTableModel para ser usado en un JTable.
      */
     public DefaultTableModel getTablaNodos() {
@@ -175,7 +184,9 @@ public class Controlador {
     }
 
     /**
-     * Genera un modelo de tabla con los datos de todas las carreteras y sus distancias.
+     * Genera un modelo de tabla con los datos de todas las carreteras y sus
+     * distancias.
+     *
      * @return DefaultTableModel para ser usado en un JTable.
      */
     public DefaultTableModel getTablaAristas() {
@@ -197,8 +208,8 @@ public class Controlador {
     }
 
     /**
-     * Reinicia los estados de todos los nodos y aristas para permitir 
-     * una nueva ejecución de algoritmos sin datos residuales.
+     * Reinicia los estados de todos los nodos y aristas para permitir una nueva
+     * ejecución de algoritmos sin datos residuales.
      */
     public void limpiarResultadoAlgoritmos() {
         for (Nodo n : grafo.getNodos()) {
@@ -206,6 +217,7 @@ public class Controlador {
             n.setPredecesor(null);
             n.setDistancia(Double.MAX_VALUE);
             n.setF(null);
+            n.setEstado(Color.BLUE);
         }
         for (Arista a : grafo.getAristas()) {
             a.setEsParteDeResultado(false);
@@ -219,16 +231,18 @@ public class Controlador {
     }
 
     // Recorridos
-    
     /**
      * Ejecuta el recorrido en anchura (BFS) a partir de una localidad semilla.
      * Calcula los niveles de distancia mínima en términos de saltos.
+     *
      * @param nodoSemilla Punto de inicio del recorrido.
      * @return Lista de nodos en el orden en que fueron descubiertos.
      */
-    public List<Nodo> ejecutarBFS(Nodo nodoSemilla) {
+    public List<PasoAlgoritmo> ejecutarBFS(Nodo nodoSemilla) {
 
         limpiarResultadoAlgoritmos();
+
+        List<PasoAlgoritmo> secuenciaPasos = new ArrayList<>();
 
         List<Nodo> nodos = this.grafo.getNodos();
 
@@ -239,16 +253,16 @@ public class Controlador {
             n.setDistancia(Double.MAX_VALUE); // Inicializamos como "infinito"
         }
 
-        List<Nodo> secuenciaVisita = new ArrayList<>();
         Queue<Nodo> cola = new LinkedList<>();
 
         nodoSemilla.setVisitado(true);
         nodoSemilla.setDistancia(0);
         cola.add(nodoSemilla);
 
+        secuenciaPasos.add(new PasoAlgoritmo(nodoSemilla, null, Color.GRAY)); // Interfaz
+
         while (!cola.isEmpty()) {
             Nodo actual = cola.poll();
-            secuenciaVisita.add(actual);
 
             for (Arista arista : actual.getAdyacentes()) {
                 Nodo vecino = arista.getDestino();
@@ -260,64 +274,86 @@ public class Controlador {
                     vecino.setDistancia(actual.getDistancia() + 1);
 
                     arista.setEsParteDeResultado(true);
+
+                    secuenciaPasos.add(new PasoAlgoritmo(vecino, arista, Color.GRAY)); // Interfaz
                     cola.add(vecino);
                 }
             }
+            secuenciaPasos.add(new PasoAlgoritmo(actual, null, Color.BLACK)); // Interfaz
         }
-        return secuenciaVisita;
+        for (Nodo n : grafo.getNodos()) {
+            n.setEstado(Color.BLUE); // Interfaz
+        }
+        return secuenciaPasos;
     }
 
-    /** Atributo auxiliar para llevar el conteo de tiempo en DFS. */
+    /**
+     * Atributo auxiliar para llevar el conteo de tiempo en DFS.
+     */
     private int tiempo;
 
     /**
      * Ejecuta el recorrido en profundidad (DFS) a partir de un nodo inicial.
+     *
      * @param inicio Nodo raíz para comenzar la exploración.
      * @return Lista de nodos visitados en orden de descubrimiento.
      */
-    public List<Nodo> ejecutarDFS(Nodo inicio) {
-        List<Nodo> visita = new ArrayList<>();
+    public List<PasoAlgoritmo> ejecutarDFS(Nodo inicio) {
+        List<PasoAlgoritmo> pasos = new ArrayList<>();
 
         limpiarResultadoAlgoritmos();
+
+        for (Nodo n : grafo.getNodos()) {
+            n.setVisitado(false);
+            n.setEstado(Color.BLUE);
+        }
+        for (Arista a : grafo.getAristas()) {
+            a.setEsParteDeResultado(false);
+        }
 
         tiempo = 0;
 
         if (!inicio.isVisitado()) {
-            dfsVisit(inicio, visita);
+            dfsVisit(inicio, pasos);
         }
-        
-        return visita;
+
+        return pasos;
     }
-    
+
     /**
      * Método recursivo para la exploración en profundidad.
-     * @param u      Nodo actual que se está visitando.
+     *
+     * @param u Nodo actual que se está visitando.
      * @param visita Lista que acumula el orden de visita.
      */
-    private void dfsVisit(Nodo u, List<Nodo> visita) {
+    private void dfsVisit(Nodo u, List<PasoAlgoritmo> pasos) {
         tiempo++;
         u.setDistancia(tiempo); // u.d = time
-
         u.setVisitado(true);
-        visita.add(u);
+        
+        pasos.add(new PasoAlgoritmo(u, null, Color.GRAY)); // Interfaz
 
         for (Arista arista : u.getAdyacentes()) {
             Nodo v = arista.getDestino();
             if (!v.isVisitado()) {
                 v.setPredecesor(u);
+                pasos.add(new PasoAlgoritmo(v, arista, Color.GRAY)); // Interfaz
                 arista.setEsParteDeResultado(true);
                 marcarAristaEspejo(v, u);
-                dfsVisit(v, visita);
+                dfsVisit(v, pasos);
             }
         }
 
         tiempo++;            // time = time + 1
         u.setF(tiempo);      // u.f = time
+        
+        pasos.add(new PasoAlgoritmo(u, null, Color.BLACK)); // Interfaz
     }
-    
+
     /**
      * Marca la arista de regreso en un grafo no dirigido para fines visuales.
-     * @param origen  Nodo desde donde se busca la conexión.
+     *
+     * @param origen Nodo desde donde se busca la conexión.
      * @param destino Nodo hacia donde apunta la arista a marcar.
      */
     private void marcarAristaEspejo(Nodo origen, Nodo destino) {
@@ -331,6 +367,7 @@ public class Controlador {
 
     /**
      * Busca un objeto Nodo dentro del grafo comparando por nombre.
+     *
      * @param nombreBusqueda Texto con el nombre de la localidad.
      * @return El objeto Nodo encontrado o null si no existe.
      */
@@ -348,5 +385,37 @@ public class Controlador {
         }
 
         return null;
+    }
+
+    /**
+     * Clase para ayudar a la animacion del recorrido
+     */
+    public class PasoAlgoritmo {
+
+        /**
+         * nodo al que se le cambiara el estado
+         */
+        public Nodo nodo;
+        /**
+         * arista a la que se le cambiara el color si es parte del resultado
+         */
+        public Arista arista;
+        /**
+         * color que se va a usar
+         */
+        public Color colorNuevo;
+
+        /**
+         * Constructor del paso
+         *
+         * @param nodo nodo a modificar
+         * @param arista arista a modificar
+         * @param colorNuevo nuevo color que se usara
+         */
+        public PasoAlgoritmo(Nodo nodo, Arista arista, Color colorNuevo) {
+            this.nodo = nodo;
+            this.arista = arista;
+            this.colorNuevo = colorNuevo;
+        }
     }
 }

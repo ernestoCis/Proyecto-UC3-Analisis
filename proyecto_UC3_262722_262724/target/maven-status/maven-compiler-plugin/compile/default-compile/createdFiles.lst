@@ -1,6 +1,7 @@
 ui\SistemaGrafos$2.class
 ui\SistemaGrafos.class
 modelo\Arista.class
+controlador\Controlador$PasoAlgoritmo.class
 ui\GrafoPanel.class
 modelo\Grafo.class
 ui\Inicio.class

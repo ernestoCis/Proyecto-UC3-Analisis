@@ -67,15 +67,13 @@ public class GrafoPanel extends JPanel {
         for (Nodo n : grafo.getNodos()) {
             for (Arista a : n.getAdyacentes()) {
                 if (a.isEsParteDeResultado()) {
-                    g2.setColor(Color.RED); // Color de resaltado
-                    g2.setStroke(new BasicStroke(6));
+                    g2.setStroke(new BasicStroke(4));
                 } else {
                     g2.setColor(Color.GRAY); // Color normal
                     g2.setStroke(new BasicStroke(1));
                 }
                 Nodo destino = a.getDestino();
 
-                g.setColor(Color.GRAY);
                 g.drawLine(n.getX(), n.getY(), destino.getX(), destino.getY());
 
                 // peso
@@ -88,7 +86,7 @@ public class GrafoPanel extends JPanel {
 
         // DIBUJAR NODOS
         for (Nodo n : grafo.getNodos()) {
-            g.setColor(Color.BLUE);
+            g.setColor(n.getEstado());
             g.fillOval(n.getX() - 10, n.getY() - 10, 20, 20);
 
             g.setColor(Color.BLACK);
