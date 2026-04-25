@@ -127,6 +127,8 @@ public class SistemaGrafos extends JFrame {
             } else if (texto.equals("Recorridos")) {
                 JPopupMenu popup = crearSubmenuRecorridos();
                 popup.show(btn, btn.getWidth(), 0);
+            } else if(texto.equals("Reportes de complejidad")){
+                mostrarReporteComplejidad();
             } else {
                 actualizarPanelDerecho(texto);
             }
@@ -224,7 +226,7 @@ public class SistemaGrafos extends JFrame {
 
     private void mostrarBFS() {
         mostrarGrafo();
-        
+
         String entrada = JOptionPane.showInputDialog(this, "Ingrese localidad semilla para BFS:");
 
         if (entrada != null && !entrada.trim().isEmpty()) {
@@ -254,10 +256,10 @@ public class SistemaGrafos extends JFrame {
             }
         }
     }
-    
+
     private void mostrarDFS() {
         mostrarGrafo();
-        
+
         String entrada = JOptionPane.showInputDialog(this, "Ingrese localidad semilla para DFS:");
 
         if (entrada != null && !entrada.trim().isEmpty()) {
@@ -317,7 +319,7 @@ public class SistemaGrafos extends JFrame {
 
         tabla.setBorder(null);
     }
-    
+
     private JPopupMenu crearSubmenuRecorridos() {
         JPopupMenu popup = new JPopupMenu();
 
@@ -333,5 +335,50 @@ public class SistemaGrafos extends JFrame {
         popup.add(dfs);
 
         return popup;
+    }
+
+    private void mostrarReporteComplejidad() {
+        panelDerecho.removeAll();
+        panelDerecho.setLayout(new BorderLayout());
+
+        JTextPane textoReporte = new JTextPane();
+        textoReporte.setContentType("text/html");
+        textoReporte.setEditable(false);
+        textoReporte.setBackground(new Color(245, 245, 245));
+
+        // CSS y Contenido
+        String html = "<html><body style='font-family: Segoe UI, sans-serif; margin: 25px; color: #2C3E50;'>"
+                + "<h1 style='color: #17202A; border-bottom: 2px solid #17202A; padding-bottom: 10px;'>Análisis de Complejidad</h1>"
+                + "<div style='margin-bottom: 20px;'>"
+                + "  <h2 style='color: #2E86C1;'>Breadth-First Search (BFS)</h2>"
+                + "  <p>Explora el grafo nivel por nivel usando una <b>Cola (FIFO)</b>.</p>"
+                + "  <ul style='list-style-type: square;'>"
+                + "    <li><b>Tiempo:</b> O(V + E)</li>"
+                + "    <li><b>Espacio:</b> O(V) - Almacena los nodos en la cola.</li>"
+                + "  </ul>"
+                + "</div>"
+                + "<div style='margin-bottom: 20px;'>"
+                + "  <h2 style='color: #2E86C1;'>Depth-First Search (DFS)</h2>"
+                + "  <p>Explora cada rama hasta el fondo usando <b>Recursividad (Stack)</b>.</p>"
+                + "  <ul style='list-style-type: square;'>"
+                + "    <li><b>Tiempo:</b> O(V + E)</li>"
+                + "    <li><b>Espacio:</b> O(V) - Debido a la pila de llamadas recursivas.</li>"
+                + "  </ul>"
+                + "</div>"
+                + "<div style='background-color: #D6EAF8; padding: 15px; border-left: 5px solid #17202A;'>"
+                + "  <b>Nota Técnica:</b> En ambos casos, <i>V</i> representa el número de ciudades de Oaxaca "
+                + "  y <i>E</i> el número de carreteras que las conectan."
+                + "</div>"
+                + "</body></html>";
+
+        textoReporte.setText(html);
+
+        JScrollPane scroll = new JScrollPane(textoReporte);
+        scroll.setBorder(null);
+
+        panelDerecho.add(scroll, BorderLayout.CENTER);
+
+        panelDerecho.revalidate();
+        panelDerecho.repaint();
     }
 }
