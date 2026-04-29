@@ -250,7 +250,7 @@ public class SistemaGrafos extends JFrame {
     }
 
     /**
-     * Genera y muestra las tablas de datos de nodos y aristas en el panel
+     * Genera y muestra las tablas de datos de nodos y aristas y matriz de adyacencia en el panel
      * derecho.
      */
     private void mostrarTabla() {
@@ -292,6 +292,25 @@ public class SistemaGrafos extends JFrame {
         scrollAristas.setPreferredSize(new Dimension(0, 200));
         scrollAristas.setMaximumSize(new Dimension(Integer.MAX_VALUE, 250));
         contenedorTablas.add(scrollAristas);
+        
+        contenedorTablas.add(Box.createRigidArea(new Dimension(0, 30)));
+
+        JLabel lblMatriz = new JLabel("MATRIZ DE ADYACENCIA");
+        lblMatriz.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        lblMatriz.setAlignmentX(Component.LEFT_ALIGNMENT);
+        contenedorTablas.add(lblMatriz);
+        contenedorTablas.add(Box.createRigidArea(new Dimension(0, 10)));
+
+        JTable tablaMatriz = new JTable(controlador.getMatrizAdyacencia());
+        
+        tablaMatriz.setAutoResizeMode(JTable.AUTO_RESIZE_OFF); 
+        estilizarTabla(tablaMatriz);
+        
+        JScrollPane scrollMatriz = new JScrollPane(tablaMatriz);
+        scrollMatriz.setPreferredSize(new Dimension(0, 300)); // Un poco más alta
+        scrollMatriz.setMaximumSize(new Dimension(Integer.MAX_VALUE, 400));
+        
+        contenedorTablas.add(scrollMatriz);
 
         panelDerecho.add(new JScrollPane(contenedorTablas), BorderLayout.CENTER);
 

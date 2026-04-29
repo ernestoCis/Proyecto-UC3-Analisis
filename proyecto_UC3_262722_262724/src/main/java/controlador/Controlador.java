@@ -522,10 +522,23 @@ public class Controlador {
      */
     public class PasoDijkstra {
 
+        /** El nodo que está siendo evaluado en este paso. */
         public Nodo nodo;
+        
+        /** 
+         * La arista que conecta al nodo actual. 
+         */
         public Arista arista;
+        
+        /** El color que indica el estado del nodo*/
         public Color color;
 
+        /**
+         * Crea un nuevo registro de paso para la animación de Dijkstra.
+         * @param nodo   Nodo afectado por el cambio de estado.
+         * @param arista Arista utilizada para alcanzar dicho nodo.
+         * @param color  Color representativo del estado actual del nodo.
+         */
         public PasoDijkstra(Nodo nodo, Arista arista, Color color) {
             this.nodo = nodo;
             this.arista = arista;
@@ -538,10 +551,23 @@ public class Controlador {
      */
     public class ResultadoDijkstra {
 
+        /** Lista ordenada de nodos que conforman el camino más corto desde el origen al destino. */
         public List<Nodo> camino;
+        
+        /** El costo total acumulado del camino encontrado (ej. distancia total en kilómetros). */
         public double distanciaTotal;
-        public List<Nodo> todosLosNodos; // para tabla
+        
+        /** Lista de todos los nodos del grafo tras la ejecución. 
+         * Útil para mostrar estados finales, distancias acumuladas y predecesores en una tabla de resultados. 
+         */
+        public List<Nodo> todosLosNodos;
 
+        /**
+         * Construye un objeto con los resultados consolidados del algoritmo.
+         * @param camino         Lista de nodos que representan la ruta mínima.
+         * @param distanciaTotal Valor numérico de la distancia mínima calculada.
+         * @param todosLosNodos  Conjunto de nodos del grafo con sus distancias finales actualizadas.
+         */
         public ResultadoDijkstra(List<Nodo> camino, double distanciaTotal, List<Nodo> todosLosNodos) {
             this.camino = camino;
             this.distanciaTotal = distanciaTotal;
@@ -634,4 +660,50 @@ public class Controlador {
 
         return modelo;
     }
+    
+    /**
+     * Genera un modelo de tabla que representa la matriz de adyacencia del grafo.
+     * <p>
+     * La matriz muestra los pesos de las aristas (carreteras) entre los nodos (localidades).
+     * En la primera columna se muestran los nombres de las localidades de origen y en 
+     * la fila de encabezado las localidades de destino. Si no existe una conexión 
+     * directa entre dos nodos, el valor se representa como "0".
+     * </p>
+     *
+     * @return {@code DefaultTableModel} con la estructura de la matriz de adyacencia, 
+     * lista para ser cargada en un componente JTable.
+     */
+    public DefaultTableModel getMatrizAdyacencia() {
+        List<Nodo> nodos = grafo.getNodos();
+        int n = nodos.size();
+
+        String[] columnas = new String[n + 1];
+        columnas[0] = "Localidades";
+        for (int i = 0; i < n; i++) {
+            columnas[i + 1] = nodos.get(i).getNombre();
+        }
+
+        Object[][] datos = new Object[n][n + 1];
+
+        for (int i = 0; i < n; i++) {
+            Nodo actual = nodos.get(i);
+            datos[i][0] = actual.getNombre(); // Nombre de la fila
+
+            for (int j = 1; j <= n; j++) {
+                datos[i][j] = "0";
+            }
+
+            for (Arista a : actual.getAdyacentes()) {
+                Nodo destino = a.getDestino();
+                int columnaDestino = nodos.indexOf(destino);
+                if (columnaDestino != -1) {
+                    // +1 porque la columna 0 es el nombre de la ciudad
+                    datos[i][columnaDestino + 1] = a.getPeso();
+                }
+            }
+        }
+
+        return new DefaultTableModel(datos, columnas);
+    }
+    
 }
