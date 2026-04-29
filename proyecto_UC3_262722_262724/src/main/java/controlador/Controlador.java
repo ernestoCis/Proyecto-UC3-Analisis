@@ -252,12 +252,11 @@ public class Controlador {
             n.setPredecesor(null);
             n.setDistancia(Double.MAX_VALUE); // Inicializamos como "infinito"
         }
-        
+
         // Pasos del 5 al 7
         nodoSemilla.setVisitado(true);
         nodoSemilla.setDistancia(0);
         nodoSemilla.setPredecesor(null);
-        
 
         // Paso 8
         Queue<Nodo> cola = new LinkedList<>();
@@ -267,7 +266,6 @@ public class Controlador {
 
         secuenciaPasos.add(new PasoAlgoritmo(nodoSemilla, null, Color.GRAY)); // Interfaz
 
-        
         while (!cola.isEmpty()) { // Paso 10
             Nodo actual = cola.poll(); // Paso 11
 
@@ -313,7 +311,7 @@ public class Controlador {
             n.setPredecesor(null);
             n.setEstado(Color.BLUE); // Interfaz
         }
-        
+
         // Interfaz
         for (Arista a : grafo.getAristas()) {
             a.setEsParteDeResultado(false);
@@ -340,20 +338,20 @@ public class Controlador {
         tiempo++; // Paso 1
         u.setDistancia(tiempo); // Paso 2      u.d = time
         u.setVisitado(true); // Paso 3
-        
+
         pasos.add(new PasoAlgoritmo(u, null, Color.GRAY)); // Interfaz
 
         for (Arista arista : u.getAdyacentes()) { // Paso 4
             Nodo v = arista.getDestino(); // v
             if (!v.isVisitado()) { // Paso 5
                 v.setPredecesor(u); // Paso 6
-                
+
                 pasos.add(new PasoAlgoritmo(v, arista, Color.GRAY)); // Interfaz
-                
+
                 dfsVisit(v, pasos); // Paso 7
             }
         }
-        
+
         pasos.add(new PasoAlgoritmo(u, null, Color.BLACK)); // Paso 8 / Interfaz
 
         tiempo++;   // Paso 9         // time = time + 1
@@ -412,5 +410,228 @@ public class Controlador {
             this.arista = arista;
             this.colorNuevo = colorNuevo;
         }
+    }
+
+    // KRUSKAL - MST
+    /**
+     * Clase contenedora para los resultados de un Árbol de Expansión Mínima
+     * (MST).
+     */
+    public class ResultadoMST {
+
+        public List<Arista> aristas;
+        public double pesoTotal;
+
+        public ResultadoMST(List<Arista> aristas, double pesoTotal) {
+            this.aristas = aristas;
+            this.pesoTotal = pesoTotal;
+        }
+    }
+
+    /**
+     * Ejecuta el algoritmo de Kruskal para hallar el Árbol de Expansión Mínima.
+     * Utiliza la técnica de Union-Find con compresión de caminos.
+     *
+     * @return Objeto ResultadoMST con las aristas seleccionadas y el costo
+     * total.
+     */
+    public ResultadoMST ejecutarKruskal() {
+        limpiarResultadoAlgoritmos();
+
+        List<Arista> resultado = new ArrayList<>();
+        double pesoTotal = 0;
+
+        List<Arista> aristas = new ArrayList<>(grafo.getAristas());
+        aristas.sort(null); // Ordenar por peso
+
+        List<Nodo> nodos = grafo.getNodos();
+
+        int n = nodos.size();
+        int[] padre = new int[n];
+        int[] rango = new int[n];
+
+        // Inicializar Union-Find
+        for (int i = 0; i < n; i++) {
+            padre[i] = i;
+            rango[i] = 0;
+        }
+
+        for (Arista a : aristas) {
+            int i = nodos.indexOf(a.getOrigen());
+            int j = nodos.indexOf(a.getDestino());
+
+            int raizI = find(padre, i);
+            int raizJ = find(padre, j);
+
+            if (raizI != raizJ) {
+                union(padre, rango, raizI, raizJ);
+
+                resultado.add(a);
+                pesoTotal += a.getPeso();
+
+                // Marcar como parte del MST (para UI)
+                a.setEsParteDeResultado(true);
+
+                // OPTIMIZACIÓN: parar cuando ya tiene n-1 aristas
+                if (resultado.size() == n - 1) {
+                    break;
+                }
+            }
+        }
+
+        return new ResultadoMST(resultado, pesoTotal);
+    }
+
+    /**
+     * Operación Find de Union-Find con compresión de caminos.
+     *
+     * @param padre Arreglo de parentesco.
+     * @param i Índice del nodo a buscar.
+     * @return Raíz del conjunto al que pertenece el nodo i.
+     */
+    private int find(int[] padre, int i) {
+        if (padre[i] != i) {
+            padre[i] = find(padre, padre[i]); // compresión
+        }
+        return padre[i];
+    }
+
+    /**
+     * Operación Union de Union-Find utilizando unión por rango.
+     *
+     * @param padre Arreglo de parentesco.
+     * @param rango Arreglo de rangos (profundidad del árbol).
+     * @param x Raíz del primer conjunto.
+     * @param y Raíz del segundo conjunto.
+     */
+    private void union(int[] padre, int[] rango, int x, int y) {
+        if (rango[x] < rango[y]) {
+            padre[x] = y;
+        } else if (rango[x] > rango[y]) {
+            padre[y] = x;
+        } else {
+            padre[y] = x;
+            rango[x]++;
+        }
+    }
+
+    // DIJKSTRA
+    /**
+     * Clase interna para representar un paso intermedio en la ejecución de
+     * Dijkstra.
+     */
+    public class PasoDijkstra {
+
+        public Nodo nodo;
+        public Arista arista;
+        public Color color;
+
+        public PasoDijkstra(Nodo nodo, Arista arista, Color color) {
+            this.nodo = nodo;
+            this.arista = arista;
+            this.color = color;
+        }
+    }
+
+    /**
+     * Clase que encapsula el resultado final del algoritmo de Dijkstra.
+     */
+    public class ResultadoDijkstra {
+
+        public List<Nodo> camino;
+        public double distanciaTotal;
+        public List<Nodo> todosLosNodos; // para tabla
+
+        public ResultadoDijkstra(List<Nodo> camino, double distanciaTotal, List<Nodo> todosLosNodos) {
+            this.camino = camino;
+            this.distanciaTotal = distanciaTotal;
+            this.todosLosNodos = todosLosNodos;
+        }
+    }
+
+    /**
+     * Ejecuta el algoritmo de Dijkstra para encontrar el camino más corto entre
+     * dos localidades.
+     *
+     * @param origen Nodo de partida.
+     * @param destino Nodo de llegada.
+     * @return Lista de pasos de la ejecución para su animación en la UI.
+     */
+    public List<PasoDijkstra> ejecutarDijkstra(Nodo origen, Nodo destino) {
+        limpiarResultadoAlgoritmos();
+
+        List<PasoDijkstra> pasos = new ArrayList<>();
+        List<Nodo> nodos = grafo.getNodos();
+
+        for (Nodo n : nodos) {
+            n.setDistancia(Double.MAX_VALUE);
+            n.setPredecesor(null);
+        }
+
+        origen.setDistancia(0);
+
+        List<Nodo> noVisitados = new ArrayList<>(nodos);
+
+        while (!noVisitados.isEmpty()) {
+
+            Nodo actual = noVisitados.stream()
+                    .min((a, b) -> Double.compare(a.getDistancia(), b.getDistancia()))
+                    .orElse(null);
+
+            if (actual == null) {
+                break;
+            }
+
+            noVisitados.remove(actual);
+
+            // GRIS = descubierto / explorando
+            pasos.add(new PasoDijkstra(actual, null, Color.GRAY));
+
+            if (actual == destino) {
+                break;
+            }
+
+            for (Arista arista : actual.getAdyacentes()) {
+                Nodo vecino = arista.getDestino();
+
+                double nuevaDist = actual.getDistancia() + arista.getPeso();
+
+                if (nuevaDist < vecino.getDistancia()) {
+                    vecino.setDistancia(nuevaDist);
+                    vecino.setPredecesor(actual);
+
+                    // vecino descubierto → gris
+                    pasos.add(new PasoDijkstra(vecino, arista, Color.GRAY));
+                }
+            }
+        }
+
+        return pasos;
+    }
+
+    /**
+     * Genera un modelo de tabla con los resultados finales de distancias tras
+     * Dijkstra.
+     *
+     * @param nodos Lista de nodos a incluir en la tabla.
+     * @return DefaultTableModel con las columnas: Nodo, Distancia y Predecesor.
+     */
+    public DefaultTableModel getTablaDijkstra(List<Nodo> nodos) {
+        String[] columnas = {"Nodo", "Distancia", "Predecesor"};
+        DefaultTableModel modelo = new DefaultTableModel(columnas, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        for (Nodo n : nodos) {
+            modelo.addRow(new Object[]{
+                n.getNombre(),
+                n.getDistancia() == Double.MAX_VALUE ? "∞" : (int) n.getDistancia() + " km",
+                n.getPredecesor() == null ? "-" : n.getPredecesor().getNombre()
+            });
+        }
+
+        return modelo;
     }
 }

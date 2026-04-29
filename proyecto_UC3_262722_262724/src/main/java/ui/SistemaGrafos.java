@@ -7,15 +7,17 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.swing.*;
 import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+import modelo.Arista;
 import modelo.Grafo;
 import modelo.Nodo;
 
@@ -27,6 +29,8 @@ import modelo.Nodo;
  * @author Paulina Guevara, Ernesto Cisneros
  */
 public class SistemaGrafos extends JFrame {
+
+    private Timer animacionActual;
 
     /**
      * Instancia del controlador para gestionar la lógica del grafo.
@@ -154,6 +158,7 @@ public class SistemaGrafos extends JFrame {
         });
 
         btn.addActionListener(e -> {
+            detenerAnimacion();
             if (texto.equals("Salir")) {
                 System.exit(0);
             } else if (texto.equals("Visualización de grafo")) {
@@ -162,14 +167,47 @@ public class SistemaGrafos extends JFrame {
             } else if (texto.equals("Recorridos")) {
                 JPopupMenu popup = crearSubmenuRecorridos();
                 popup.show(btn, btn.getWidth(), 0);
+            } else if (texto.equals("Árbol de Expansión Mínima")) {
+                JPopupMenu popup = crearSubmenuMST();
+                popup.show(btn, btn.getWidth(), 0);
+            } else if (texto.equals("Rutas más cortas")) {
+                JPopupMenu popup = crearSubmenuDijkstra();
+                popup.show(btn, btn.getWidth(), 0);
             } else if (texto.equals("Reportes de complejidad")) {
-                mostrarReporteComplejidad();
+                JPopupMenu popup = crearSubmenuReportes();
+                popup.show(btn, btn.getWidth(), 0);
             } else {
                 actualizarPanelDerecho(texto);
             }
-        });
+        }
+        );
 
         return btn;
+    }
+
+    /**
+     * Crea un menú emergente con las opciones para visualizar reportes de
+     * complejidad.
+     *
+     * * @return JPopupMenu con las opciones de reportes.
+     */
+    private JPopupMenu crearSubmenuReportes() {
+        JPopupMenu popup = new JPopupMenu();
+
+        JMenuItem recorridos = new JMenuItem("Recorridos");
+        recorridos.addActionListener(e -> mostrarReporteComplejidadRecorridos());
+
+        JMenuItem mst = new JMenuItem("Árbol de Expansión Mínima");
+        mst.addActionListener(e -> mostrarReporteComplejidadMST());
+
+        JMenuItem rmc = new JMenuItem("Ruta más corta");
+        rmc.addActionListener(e -> mostrarReporteComplejidadRuta());
+
+        popup.add(recorridos);
+        popup.add(mst);
+        popup.add(rmc);
+
+        return popup;
     }
 
     /**
@@ -294,7 +332,9 @@ public class SistemaGrafos extends JFrame {
                 controlador.limpiarResultadoAlgoritmos();
                 List<PasoAlgoritmo> pasos = controlador.ejecutarBFS(semilla);
 
-                Timer timer = new Timer(100, null);
+                animacionActual = new Timer(100, null);
+                Timer timer = animacionActual;
+
                 final int[] indice = {0};
 
                 timer.addActionListener(e -> {
@@ -360,7 +400,8 @@ public class SistemaGrafos extends JFrame {
                 controlador.limpiarResultadoAlgoritmos();
                 List<PasoAlgoritmo> pasos = controlador.ejecutarDFS(semilla);
 
-                Timer timer = new Timer(100, null);
+                animacionActual = new Timer(100, null);
+                Timer timer = animacionActual;
                 final int[] indice = {0};
 
                 timer.addActionListener(e -> {
@@ -388,6 +429,14 @@ public class SistemaGrafos extends JFrame {
         }
     }
 
+    /**
+     * Muestra el reporte final del recorrido DFS incluyendo tiempos de
+     * descubrimiento y finalización.
+     *
+     * * @param semilla El nodo inicial del recorrido.
+     * @param pasos Lista de pasos de ejecución para extraer los datos de los
+     * nodos.
+     */
     private void mostrarReporteFinalDFS(Nodo semilla, List<PasoAlgoritmo> pasos) {
         StringBuilder sb = new StringBuilder();
         sb.append("RECORRIDO DFS FINALIZADO\n");
@@ -478,7 +527,7 @@ public class SistemaGrafos extends JFrame {
      * Genera un reporte de complejidad temporal en formato HTML y lo muestra en
      * el panel derecho.
      */
-    private void mostrarReporteComplejidad() {
+    private void mostrarReporteComplejidadRecorridos() {
         panelDerecho.removeAll();
         panelDerecho.setLayout(new BorderLayout());
 
@@ -521,5 +570,336 @@ public class SistemaGrafos extends JFrame {
 
         panelDerecho.revalidate();
         panelDerecho.repaint();
+    }
+
+    /**
+     * Muestra un reporte en formato HTML sobre la complejidad del algoritmo de
+     * Kruskal (MST).
+     */
+    private void mostrarReporteComplejidadMST() {
+        panelDerecho.removeAll();
+        panelDerecho.setLayout(new BorderLayout());
+
+        JTextPane textoReporte = new JTextPane();
+        textoReporte.setContentType("text/html");
+        textoReporte.setEditable(false);
+        textoReporte.setBackground(new Color(245, 245, 245));
+
+        String html = "<html><body style='font-family: Segoe UI, sans-serif; margin: 25px; color: #2C3E50;'>"
+                + "<h1 style='color: #17202A; border-bottom: 2px solid #17202A;'>Árbol de Expansión Mínima</h1>"
+                + "<div style='margin-top:20px;'>"
+                + "<h2 style='color:#2E86C1;'>Algoritmo de Kruskal</h2>"
+                + "<p>Construye un árbol mínimo seleccionando aristas de menor peso sin formar ciclos.</p>"
+                + "<ul style='list-style-type:square;'>"
+                + "<li><b>Tiempo:</b> O(E log E)</li>"
+                + "<li><b>Espacio:</b> O(V)</li>"
+                + "</ul>"
+                + "<p><b>¿Por qué?</b></p>"
+                + "<ul>"
+                + "<li>Se ordenan las aristas → O(E log E)</li>"
+                + "<li>Se usa Union-Find para evitar ciclos</li>"
+                + "</ul>"
+                + "</div>"
+                + "<div style='background-color:#D6EAF8; padding:15px; border-left:5px solid #17202A;'>"
+                + "<b>Nota:</b> E = carreteras, V = ciudades."
+                + "</div>"
+                + "</body></html>";
+
+        textoReporte.setText(html);
+
+        JScrollPane scroll = new JScrollPane(textoReporte);
+        scroll.setBorder(null);
+
+        panelDerecho.add(scroll, BorderLayout.CENTER);
+        panelDerecho.revalidate();
+        panelDerecho.repaint();
+    }
+
+    /**
+     * Muestra un reporte en formato HTML sobre la complejidad del algoritmo de
+     * Dijkstra.
+     */
+    private void mostrarReporteComplejidadRuta() {
+        panelDerecho.removeAll();
+        panelDerecho.setLayout(new BorderLayout());
+
+        JTextPane textoReporte = new JTextPane();
+        textoReporte.setContentType("text/html");
+        textoReporte.setEditable(false);
+        textoReporte.setBackground(new Color(245, 245, 245));
+
+        String html = "<html><body style='font-family: Segoe UI, sans-serif; margin: 25px; color: #2C3E50;'>"
+                + "<h1 style='color: #17202A; border-bottom: 2px solid #17202A;'>Rutas Más Cortas</h1>"
+                + "<div style='margin-top:20px;'>"
+                + "<h2 style='color:#2E86C1;'>Algoritmo de Dijkstra</h2>"
+                + "<p>Encuentra la ruta más corta desde un nodo origen a todos los demás.</p>"
+                + "<ul style='list-style-type:square;'>"
+                + "<li><b>Tiempo:</b> O((V + E) log V)</li>"
+                + "<li><b>Espacio:</b> O(V)</li>"
+                + "</ul>"
+                + "<p><b>¿Por qué?</b></p>"
+                + "<ul>"
+                + "<li>Se usa una cola de prioridad (heap)</li>"
+                + "<li>Cada actualización cuesta log V</li>"
+                + "</ul>"
+                + "</div>"
+                + "<div style='background-color:#D6EAF8; padding:15px; border-left:5px solid #17202A;'>"
+                + "<b>Nota:</b> Ideal para grafos con pesos positivos (como distancias en km)."
+                + "</div>"
+                + "</body></html>";
+
+        textoReporte.setText(html);
+
+        JScrollPane scroll = new JScrollPane(textoReporte);
+        scroll.setBorder(null);
+
+        panelDerecho.add(scroll, BorderLayout.CENTER);
+        panelDerecho.revalidate();
+        panelDerecho.repaint();
+    }
+
+    /**
+     * Crea un menú emergente para ejecutar el algoritmo de Kruskal.
+     *
+     * * @return JPopupMenu configurado.
+     */
+    private JPopupMenu crearSubmenuMST() {
+        /**
+         * Crea un menú emergente para ejecutar el algoritmo de Kruskal.
+         *
+         * * @return JPopupMenu configurado.
+         */
+        JPopupMenu popup = new JPopupMenu();
+
+        JMenuItem kruskal = new JMenuItem("Kruskal");
+        kruskal.addActionListener(e -> mostrarMST());
+
+        popup.add(kruskal);
+
+        return popup;
+    }
+
+    /**
+     * Ejecuta y anima visualmente el algoritmo de Kruskal para obtener el Árbol
+     * de Expansión Mínima.
+     */
+    private void mostrarMST() {
+        controlador.limpiarResultadoAlgoritmos();
+        Controlador.ResultadoMST res = controlador.ejecutarKruskal();
+
+        mostrarGrafo();
+
+        animacionActual = new Timer(500, null);
+        Timer timer = animacionActual;
+
+        final int[] indice = {0};
+        final boolean[] faseExploracion = {true};
+
+        timer.addActionListener(e -> {
+            if (indice[0] < res.aristas.size()) {
+
+                Arista a = res.aristas.get(indice[0]);
+
+                if (faseExploracion[0]) {
+                    // FASE 1: EXPLORAR
+                    a.getOrigen().setEstado(Color.GRAY);
+                    a.getDestino().setEstado(Color.GRAY);
+
+                    faseExploracion[0] = false;
+
+                } else {
+                    // FASE 2: CONFIRMAR
+                    a.setEsParteDeResultado(true);
+
+                    a.getOrigen().setEstado(Color.BLACK);
+                    a.getDestino().setEstado(Color.BLACK);
+
+                    faseExploracion[0] = true;
+                    indice[0]++;
+                }
+
+                panelDerecho.repaint();
+
+            } else {
+                timer.stop();
+
+                StringBuilder sb = new StringBuilder();
+                sb.append("ÁRBOL DE EXPANSIÓN MÍNIMA (KRUSKAL)\n\n");
+
+                for (Arista a : res.aristas) {
+                    sb.append(a.getOrigen().getNombre())
+                            .append(" -> ")
+                            .append(a.getDestino().getNombre())
+                            .append(" (")
+                            .append((int) a.getPeso())
+                            .append(" km)\n");
+                }
+
+                sb.append("\nPeso total: ")
+                        .append((int) res.pesoTotal)
+                        .append(" km");
+
+                new DialogoPersonalizado(this, "Kruskal", sb.toString()).setVisible(true);
+            }
+        });
+
+        timer.start();
+    }
+
+    // DIJKSTRA
+    /**
+     * Crea un menú emergente para ejecutar el algoritmo de Dijkstra.
+     *
+     * * @return JPopupMenu configurado.
+     */
+    private JPopupMenu crearSubmenuDijkstra() {
+        JPopupMenu popup = new JPopupMenu();
+
+        JMenuItem dijkstra = new JMenuItem("Dijkstra");
+        dijkstra.addActionListener(e -> mostrarDijkstra());
+
+        popup.add(dijkstra);
+
+        return popup;
+    }
+
+    /**
+     * Solicita origen y destino, ejecuta el algoritmo de Dijkstra y anima el
+     * proceso de búsqueda.
+     */
+    private void mostrarDijkstra() {
+        mostrarGrafo();
+
+        String origenStr = JOptionPane.showInputDialog(this, "Ingrese ciudad ORIGEN:");
+        String destinoStr = JOptionPane.showInputDialog(this, "Ingrese ciudad DESTINO:");
+
+        if (origenStr == null || destinoStr == null) {
+            return;
+        }
+
+        Nodo origen = controlador.buscarNodoPorNombre(origenStr);
+        Nodo destino = controlador.buscarNodoPorNombre(destinoStr);
+
+        if (origen == null || destino == null) {
+            JOptionPane.showMessageDialog(this, "Ciudad no encontrada.");
+            return;
+        }
+
+        List<Controlador.PasoDijkstra> pasos = controlador.ejecutarDijkstra(origen, destino);
+
+        animacionActual = new Timer(120, null);
+        Timer timer = animacionActual;
+
+        final int[] i = {0};
+
+        timer.addActionListener(e -> {
+            if (i[0] < pasos.size()) {
+                Controlador.PasoDijkstra p = pasos.get(i[0]);
+
+                p.nodo.setEstado(p.color);
+
+                if (p.arista != null) {
+                    p.arista.setEsParteDeResultado(true);
+                }
+
+                panelDerecho.repaint();
+                i[0]++;
+            } else {
+                timer.stop();
+
+                // reconstruir camino final
+                List<Nodo> camino = new ArrayList<>();
+                Nodo actual = destino;
+
+                while (actual != null) {
+                    camino.add(0, actual);
+                    actual = actual.getPredecesor();
+                }
+
+                for (int j = 0; j < camino.size() - 1; j++) {
+                    Nodo a = camino.get(j);
+                    Nodo b = camino.get(j + 1);
+
+                    for (Arista ar : a.getAdyacentes()) {
+                        if (ar.getDestino() == b) {
+                            ar.setEsParteDeResultado(true);
+                        }
+                    }
+
+                    // NEGRO = ruta final
+                    a.setEstado(Color.BLACK);
+                    b.setEstado(Color.BLACK);
+                }
+
+                panelDerecho.repaint();
+
+                mostrarResultadoDijkstra(camino, destino);
+            }
+        });
+
+        timer.start();
+    }
+
+    /**
+     * Muestra una ventana con el resumen del camino más corto y una tabla con
+     * los estados finales de los nodos.
+     *
+     * * @param camino Lista ordenada de nodos que conforman la ruta óptima.
+     * @param destino Nodo destino para extraer la distancia total acumulada.
+     */
+    private void mostrarResultadoDijkstra(List<Nodo> camino, Nodo destino) {
+
+        JPanel panel = new JPanel(new BorderLayout());
+
+        // Texto
+        JTextArea area = new JTextArea();
+        area.setEditable(false);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("RUTA MÁS CORTA (DIJKSTRA)\n\n");
+
+        for (Nodo n : camino) {
+            sb.append(n.getNombre()).append(" → ");
+        }
+
+        sb.append("\n\nDistancia total: ")
+                .append((int) destino.getDistancia())
+                .append(" km");
+
+        area.setText(sb.toString());
+
+        //  Tabla
+        DefaultTableModel modelo = new DefaultTableModel(
+                new String[]{"Nodo", "Distancia", "Predecesor"}, 0) {
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
+        };
+
+        for (Nodo n : controlador.getGrafo().getNodos()) {
+            modelo.addRow(new Object[]{
+                n.getNombre(),
+                n.getDistancia() == Double.MAX_VALUE ? "∞" : (int) n.getDistancia() + " km",
+                n.getPredecesor() == null ? "-" : n.getPredecesor().getNombre()
+            });
+        }
+
+        JTable tabla = new JTable(modelo);
+        estilizarTabla(tabla);
+
+        panel.add(new JScrollPane(area), BorderLayout.NORTH);
+        panel.add(new JScrollPane(tabla), BorderLayout.CENTER);
+
+        JOptionPane.showMessageDialog(this, panel, "Dijkstra", JOptionPane.PLAIN_MESSAGE);
+    }
+
+    /**
+     * Detiene la ejecución de cualquier animación (Timer) que se encuentre
+     * activa en ese momento.
+     */
+    private void detenerAnimacion() {
+        if (animacionActual != null && animacionActual.isRunning()) {
+            animacionActual.stop();
+        }
     }
 }
